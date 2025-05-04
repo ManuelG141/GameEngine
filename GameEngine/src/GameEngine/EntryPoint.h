@@ -6,7 +6,10 @@ extern GameEngine::Application* GameEngine::CreateApplication();
 
 int main(int argc, char** argv)
 {
-	printf("Game Engine");
+	GameEngine::Log::Init();
+	GE_CORE_WARN("Initializing Log!");
+	const char* name = "User";
+	GE_INFO("Ciao, {0}! Come va?", name);
 
 	auto app = GameEngine::CreateApplication();
 	app->Run();
