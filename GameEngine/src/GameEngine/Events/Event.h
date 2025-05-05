@@ -3,9 +3,6 @@
 #include "GameEngine/Core.h"
 #include "spdlog/sinks/stdout_sinks.h"
 
-#include <string>
-#include <functional>
-
 namespace GameEngine {
 
 	// Events are currently blocking, when an event occurs it gets dispatched and dealt immediately
@@ -21,15 +18,22 @@ namespace GameEngine {
 
 	enum EventCategory
 	{
-		None = 0,
-		EventCategoryApplication	= BIT(0),
-		EventCategoryInput			= BIT(1),
-		EventCategoryKeyboard		= BIT(2),
-		EventCategoryMouse			= BIT(3),
-		EventCategoryMouseButton	= BIT(4)
+		None = 0,					          // 00000
+		EventCategoryApplication	= BIT(0), // 00001
+		EventCategoryInput			= BIT(1), // 00010
+		EventCategoryKeyboard		= BIT(2), // 00100
+		EventCategoryMouse			= BIT(3), // 01000
+		EventCategoryMouseButton	= BIT(4)  // 10000
 	};
 
-	#define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return EventType::##type; }\
+	// preprocessor directives, the ## concatenates two arguments:
+	// #define CREATE_VAR(name) int my_##name;
+	// CREATE_VAR(int) // results in: int my_int;
+
+	// the # replace the content with a string:
+	// #define str(x) #x
+	// std::cout << str(Marco); // results in: std::cout << "Marco";
+	#define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return EventType::type; }\
 									virtual EventType GetEventType() const override { return GetStaticType(); }\
 									virtual const char* GetName() const override { return #type; }
 
@@ -46,12 +50,22 @@ namespace GameEngine {
 
 		inline bool IsInCategory(EventCategory category)
 		{
+			// EXAMPLE:
+			// 01010 EventCategoryInput OR (|) EventCategoryMouse
+			// 10000 EventCategoryMouseButton
+			// 00000 final result equals to 0, same as false
+
+			// 01010 EventCategoryInput OR (|) EventCategoryMouse
+			// 01000 EventCategoryMouse
+			// 01000 final result it's 8(DEC), different from 0, same as true
+
 			return GetCategoryFlags() & category;
 		}
 	protected:
 		bool m_Handled = false;
 	};
 
+	// This code is implemented but not used yet
 	class EventDispatcher
 	{
 		template<typename T>
@@ -65,6 +79,7 @@ namespace GameEngine {
 		{
 			if (m_Event.GetEventType() == T::GetStaticType())
 			{
+				// Get the pointer of m_Event, cast it into a T pointer, and then dereference it, getting an m_Event cast into a T type
 				m_Event.m_Handled = func(*(T*)&m_Event);
 				return true;
 			}

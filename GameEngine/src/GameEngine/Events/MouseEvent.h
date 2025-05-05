@@ -2,8 +2,6 @@
 
 #include "Event.h"
 
-#include <sstream>
-
 namespace GameEngine {
 
 	class GE_API MouseMovedEvent : public Event
@@ -46,7 +44,12 @@ namespace GameEngine {
 		}
 
 		EVENT_CLASS_TYPE(MouseScrolled)
-		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
+
+		// 00010 EventCategoryInput
+		// 01000 EventCategoryMouse
+		// 01010 final result after using OR bitwise operator
+
+		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput) // 01010 will be used to create the category
 	private:
 		float m_XOffset, m_YOffset;
 	};

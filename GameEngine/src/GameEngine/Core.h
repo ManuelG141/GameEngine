@@ -12,4 +12,4 @@
 	#error Only Windows is supported!
 #endif
 
-#define BIT(x) (1 << x)
+#define BIT(x) (1 << x) // add "x" zeros at the beginning of the number to left-shift the bits
