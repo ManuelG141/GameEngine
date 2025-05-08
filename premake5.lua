@@ -14,13 +14,21 @@ workspace "GameEngine"
 --  List with Tokes (Visual Studio Macros): https://premake.github.io/docs/Tokens/
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+-- Include directories relative to root folder (solution directory)
+IncludeDir = {}
+IncludeDir["spdlog"] = "GameEngine/vendor/spdlog/include"
+IncludeDir["GLFW"] = "GameEngine/vendor/GLFW/include"
+
+-- Include premake file inside GLFW folder
+include "GameEngine/vendor/GLFW"
+
 project "GameEngine"
 	location "GameEngine"
 	kind "SharedLib"
 	language "C++"
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
 
 	pchheader "gepch.h"
 	pchsource "%{prj.name}/src/gepch.cpp"
@@ -34,15 +42,16 @@ project "GameEngine"
 	includedirs
 	{
 		"%{prj.name}/src",
-		"%{prj.name}/vendor/spdlog/include"
+		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.GLFW}"
 	}
 
-	postbuildcommands
+	links
 	{
-		("{MKDIR} ../bin/" .. outputdir .. "/Sandbox"),
-		("{COPYFILE} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox")
+		"GLFW",
+		"opengl32.lib",
+		"dwmapi.lib"
 	}
-
 
 	filter "system:windows" -- this configurations are just for windows
 		cppdialect "C++17"
@@ -55,6 +64,12 @@ project "GameEngine"
 		{
 			"GE_PLATFORM_WINDOWS",
 			"GE_BUILD_DLL"
+		}
+
+		postbuildcommands
+		{
+			("{MKDIR} ../bin/" .. outputdir .. "/Sandbox"),
+			("{COPYFILE} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox")
 		}
 
 	-- Preprocessor definitions per configuration
@@ -75,8 +90,8 @@ project "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
 
 	files 
 	{
