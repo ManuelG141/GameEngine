@@ -3,4 +3,4 @@
 	url = https://github.com/gabime/spdlog.git
 [submodule "GameEngine/vendor/GLFW"]
 	path = GameEngine/vendor/GLFW
-	url = https://github.com/glfw/glfw.git
+	url = https://github.com/ManuelG141/glfw.git
