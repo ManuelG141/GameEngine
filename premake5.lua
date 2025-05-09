@@ -11,6 +11,8 @@ workspace "GameEngine"
 		"Dist"
 	}
 
+	startproject "Sandbox" -- Start project when opening the solution
+
 --  List with Tokes (Visual Studio Macros): https://premake.github.io/docs/Tokens/
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
