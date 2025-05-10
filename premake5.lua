@@ -57,7 +57,7 @@ project "GameEngine"
 
 	filter "system:windows" -- this configurations are just for windows
 		cppdialect "C++17"
-		staticruntime "On"  -- Linking the runtime libraries staticly
+		staticruntime "Off"  -- Linking the runtime libraries staticly
 		systemversion "latest"
 
 		buildoptions "/utf-8" -- Command line additional options
@@ -77,20 +77,24 @@ project "GameEngine"
 	-- Preprocessor definitions per configuration
 	filter "configurations:Debug"
 		defines "GE_DEBUG"
+		buildoptions "/MDd"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "GE_RELEASE"
+		buildoptions "/MD"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "GE_DIST"
+		buildoptions "/MD"
 		optimize "On"
 
 project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
+	staticruntime "Off"
 
 	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
@@ -127,12 +131,15 @@ project "Sandbox"
 	-- Preprocessor definitions per configuration
 	filter "configurations:Debug"
 		defines "GE_DEBUG"
+		buildoptions "/MDd"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "GE_RELEASE"
+		buildoptions "/MD"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "GE_DIST"
+		buildoptions "/MD"
 		optimize "On"

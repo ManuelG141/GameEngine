@@ -9,14 +9,28 @@ namespace GameEngine {
 
 #define BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
 
-	Application::Application()
+	Application::Application(const WindowProps& props)
 	{
-		m_Window = std::unique_ptr<Window>(Window::Create());
+		m_Window = std::unique_ptr<Window>(Window::Create(props));
 		m_Window->SetEventCallBack(BIND_EVENT_FN(Application::OnEvent));
 		m_Running = true;
 	}
 
 	Application::~Application() {}
+
+	void Application::PushLayer(Layer* layer)
+	{
+		m_LayerStack.PushLayer(layer);
+	}
+
+	void Application::PushOverlay(Layer* overlay)
+	{
+		m_LayerStack.PushOverlay(overlay);
+	}
+
+	// Not implemented yet
+	void Application::PopLayer(Layer* layer) {}
+	void Application::PopOverlay(Layer* overlay) {}
 
 	void Application::OnEvent(Event& e)
 	{
@@ -24,14 +38,33 @@ namespace GameEngine {
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
 
 		GE_CORE_TRACE(e.ToString());
+
+		// Send the event to all the layers and stop propagating it if some layer handles it
+		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
+		{
+			(*--it)->OnEvent(e);
+			if (e.IsHandled())
+				break;
+		}
 	}
+
+	void Application::SetVSync(bool enabled)
+	{
+		m_Window->SetVSync(enabled);
+	}
+
 
 	void Application::Run()
 	{
 		while (m_Running)
 		{
-			glClearColor(1, 0, 1, 1);
+			glClearColor(0.5, 0.5, 0.5, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			// Update every layer before updating the window
+			for (Layer* layer : m_LayerStack)
+				layer->OnUpdate();
+
 			m_Window->OnUpdate();
 		}
 	}

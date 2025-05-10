@@ -1,11 +1,39 @@
 #include "GameEngine.h" 
 
+class ExampleLayer : public GameEngine::Layer
+{
+public:
+	ExampleLayer(const char* name = "Example")
+		: Layer(name) {}
+
+	void OnUpdate() override
+	{
+		//GE_INFO("[{0}] Layer::Update", m_DebugName);
+	}
+
+	void OnEvent(GameEngine::Event& event) override
+	{
+		if (event.GetEventType() == GameEngine::EventType::MouseButtonPressed)
+			GE_WARN("[{0}]: {1}", m_DebugName, event.ToString());
+		else
+			GE_TRACE("[{0}]: {1}", m_DebugName, event.ToString());
+	}
+};
+
 class Sandbox : public GameEngine::Application
 {
 public:
 	Sandbox()
+		// If you define the Application Constructor here you can change window properties
+		// If you want to use the default options ("Game Engine", 1280U, 720U) just don't call the constructor of Application
+		: Application(GameEngine::WindowProps("Sandbox", 720U, 460U))
 	{
+		// Disable/Enable VSync
+		this->SetVSync(false);
 
+		// Example of Layer Implementation
+		PushLayer(new ExampleLayer("Onion"));
+		PushLayer(new ExampleLayer());
 	}
 
 	~Sandbox()
