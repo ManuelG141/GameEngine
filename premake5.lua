@@ -20,9 +20,11 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["spdlog"] = "GameEngine/vendor/spdlog/include"
 IncludeDir["GLFW"] = "GameEngine/vendor/GLFW/include"
+IncludeDir["Glad"] = "GameEngine/vendor/Glad/include"
 
--- Include premake file inside GLFW folder
+-- Include premake files inside vendor folder
 include "GameEngine/vendor/GLFW"
+include "GameEngine/vendor/Glad"
 
 project "GameEngine"
 	location "GameEngine"
@@ -45,14 +47,15 @@ project "GameEngine"
 	{
 		"%{prj.name}/src",
 		"%{IncludeDir.spdlog}",
-		"%{IncludeDir.GLFW}"
+		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.Glad}"
 	}
 
 	links
 	{
 		"GLFW",
-		"opengl32.lib",
-		"dwmapi.lib"
+		"Glad",
+		"opengl32.lib"
 	}
 
 	filter "system:windows" -- this configurations are just for windows
