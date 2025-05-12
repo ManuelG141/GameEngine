@@ -21,10 +21,12 @@ IncludeDir = {}
 IncludeDir["spdlog"] = "GameEngine/vendor/spdlog/include"
 IncludeDir["GLFW"] = "GameEngine/vendor/GLFW/include"
 IncludeDir["Glad"] = "GameEngine/vendor/Glad/include"
+IncludeDir["imgui"] = "GameEngine/vendor/imgui"
 
 -- Include premake files inside vendor folder
 include "GameEngine/vendor/GLFW"
 include "GameEngine/vendor/Glad"
+include "GameEngine/vendor/imgui"
 
 project "GameEngine"
 	location "GameEngine"
@@ -48,13 +50,15 @@ project "GameEngine"
 		"%{prj.name}/src",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.Glad}"
+		"%{IncludeDir.Glad}",
+		"%{IncludeDir.imgui}"
 	}
 
 	links
 	{
 		"GLFW",
 		"Glad",
+		"imgui",
 		"opengl32.lib"
 	}
 
