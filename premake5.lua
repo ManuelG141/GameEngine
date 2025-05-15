@@ -23,10 +23,13 @@ IncludeDir["GLFW"] = "GameEngine/vendor/GLFW/include"
 IncludeDir["Glad"] = "GameEngine/vendor/Glad/include"
 IncludeDir["ImGui"] = "GameEngine/vendor/imgui"
 
+-- Create a virtual folder inside the IDE to store all dependencies
+group "Dependencies"
 -- Include premake files inside vendor folder
 include "GameEngine/vendor/GLFW"
 include "GameEngine/vendor/Glad"
 include "GameEngine/vendor/imgui"
+group ""
 
 project "GameEngine"
 	location "GameEngine"
