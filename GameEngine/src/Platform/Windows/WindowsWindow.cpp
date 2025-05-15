@@ -96,26 +96,33 @@ namespace GameEngine {
 				{
 					case GLFW_PRESS:
 					{
-						KeyPressedEvent event(key, 0);
+						KeyPressedEvent event(key, scancode, 0);
 						data.EventCallBack(event);
 						break;
 					}
 					case GLFW_RELEASE:
 					{
-						KeyReleasedEvent event(key);
+						KeyReleasedEvent event(key, scancode);
 						data.EventCallBack(event);
 						break;
 					}
 					case GLFW_REPEAT:
 					{
 						// TODO: Abstract the repeat count, by the moment it only tells if the key is being repeated or not, but doesn't stores the actual count
-						KeyPressedEvent event(key, 1);
+						KeyPressedEvent event(key, scancode, 1);
 						data.EventCallBack(event);
 						break;
 					}
 				}
 			});
 	
+		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int codepoint)
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+				KeyTypedEvent event(codepoint);
+				data.EventCallBack(event);
+			});
+
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
 			{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);

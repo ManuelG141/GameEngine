@@ -13,10 +13,7 @@ public:
 
 	void OnEvent(GameEngine::Event& event) override
 	{
-		if (event.GetEventType() == GameEngine::EventType::MouseButtonPressed)
-			GE_WARN("[{0}]: {1}", m_DebugName, event.ToString());
-		else
-			GE_TRACE("[{0}]: {1}", m_DebugName, event.ToString());
+		GE_TRACE("[{0}]: {1}", m_DebugName, event.ToString());
 	}
 };
 
@@ -32,8 +29,8 @@ public:
 		this->SetVSync(false);
 
 		// Example of Layer Implementation
-		PushLayer(new ExampleLayer("Onion"));
 		PushLayer(new ExampleLayer());
+
 		PushOverlay(new GameEngine::ImGuiLayer());
 	}
 

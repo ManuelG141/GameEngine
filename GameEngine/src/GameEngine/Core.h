@@ -21,3 +21,5 @@
 #endif
 
 #define BIT(x) (1 << x) // add "x" zeros at the beginning of the number to left-shift the bits
+
+#define GE_BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)

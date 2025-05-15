@@ -1,4 +1,5 @@
 #include "gepch.h"
+#include "Core.h"
 #include "Application.h"
 
 #include "GameEngine/Log.h"
@@ -6,8 +7,6 @@
 #include "GLFW/glfw3.h"
 
 namespace GameEngine {
-
-#define BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
 
 	Application* Application::s_Instance = nullptr;
 
@@ -17,7 +16,7 @@ namespace GameEngine {
 		s_Instance = this;
 
 		m_Window = std::unique_ptr<Window>(Window::Create(props));
-		m_Window->SetEventCallBack(BIND_EVENT_FN(Application::OnEvent));
+		m_Window->SetEventCallBack(GE_BIND_EVENT_FN(Application::OnEvent));
 		m_Running = true;
 	}
 
@@ -42,7 +41,7 @@ namespace GameEngine {
 	void Application::OnEvent(Event& e)
 	{
 		EventDispatcher dispatcher(e);
-		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
+		dispatcher.Dispatch<WindowCloseEvent>(GE_BIND_EVENT_FN(Application::OnWindowClose));
 
 		GE_CORE_TRACE(e.ToString());
 
