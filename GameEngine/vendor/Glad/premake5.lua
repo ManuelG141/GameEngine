@@ -23,6 +23,8 @@ project "Glad"
 		systemversion "latest"
 
 	filter { "system:windows", "configurations:Release or configurations:Dist" }
-		buildoptions "/MT"
+		runtime "Release"
+		optimize "On"
 	filter { "system:windows", "configurations:Debug" }
-		buildoptions "/MTd"
+		runtime "Debug"
+		symbols "On"

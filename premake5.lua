@@ -66,7 +66,6 @@ project "GameEngine"
 	filter "system:windows" -- this configurations are just for windows
 		cppdialect "C++17"
 		systemversion "latest"
-
 		buildoptions "/utf-8" -- Command line additional options
 
 		defines
@@ -84,22 +83,18 @@ project "GameEngine"
 
 	-- Preprocessor definitions per configuration
 	filter "configurations:Debug"
-		defines 
-		{
-			"GE_DEBUG",
-			"GE_ENABLE_ASSERTS"
-		}
-		buildoptions "/MDd"
+		defines "GE_DEBUG"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "GE_RELEASE"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "GE_DIST"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 
 project "Sandbox"
@@ -132,7 +127,6 @@ project "Sandbox"
 		cppdialect "C++17"
 		--staticruntime "On"  -- Linking the runtime libraries staticly
 		systemversion "latest"
-
 		buildoptions "/utf-8" -- Command line additional options
 
 		defines
@@ -143,15 +137,15 @@ project "Sandbox"
 	-- Preprocessor definitions per configuration
 	filter "configurations:Debug"
 		defines "GE_DEBUG"
-		buildoptions "/MDd"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "GE_RELEASE"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "GE_DIST"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
