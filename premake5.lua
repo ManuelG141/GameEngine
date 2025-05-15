@@ -21,7 +21,7 @@ IncludeDir = {}
 IncludeDir["spdlog"] = "GameEngine/vendor/spdlog/include"
 IncludeDir["GLFW"] = "GameEngine/vendor/GLFW/include"
 IncludeDir["Glad"] = "GameEngine/vendor/Glad/include"
-IncludeDir["imgui"] = "GameEngine/vendor/imgui"
+IncludeDir["ImGui"] = "GameEngine/vendor/imgui"
 
 -- Include premake files inside vendor folder
 include "GameEngine/vendor/GLFW"
@@ -32,6 +32,7 @@ project "GameEngine"
 	location "GameEngine"
 	kind "SharedLib"
 	language "C++"
+	staticruntime "Off"  -- Linking the runtime libraries staticly
 
 	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
@@ -51,20 +52,19 @@ project "GameEngine"
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
-		"%{IncludeDir.imgui}"
+		"%{IncludeDir.ImGui}"
 	}
 
 	links
 	{
 		"GLFW",
 		"Glad",
-		"imgui",
+		"ImGui",
 		"opengl32.lib"
 	}
 
 	filter "system:windows" -- this configurations are just for windows
 		cppdialect "C++17"
-		staticruntime "Off"  -- Linking the runtime libraries staticly
 		systemversion "latest"
 
 		buildoptions "/utf-8" -- Command line additional options
@@ -72,7 +72,8 @@ project "GameEngine"
 		defines
 		{
 			"GE_PLATFORM_WINDOWS",
-			"GE_BUILD_DLL"
+			"GE_BUILD_DLL",
+			"IMGUI_IMPL_OPENGL_LOADER_CUSTOM" -- Temporal, just to test ImGui before properly setting up the renderer abstraction
 		}
 
 		postbuildcommands
@@ -83,7 +84,11 @@ project "GameEngine"
 
 	-- Preprocessor definitions per configuration
 	filter "configurations:Debug"
-		defines "GE_DEBUG"
+		defines 
+		{
+			"GE_DEBUG",
+			"GE_ENABLE_ASSERTS"
+		}
 		buildoptions "/MDd"
 		symbols "On"
 

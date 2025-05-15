@@ -3,7 +3,7 @@
 #include "GameEngine/Window.h"
 #include "GameEngine/Log.h"
 
-#include <GLFW/glfw3.h>
+#include "GLFW/glfw3.h"
 
 namespace GameEngine {
 
@@ -22,6 +22,7 @@ namespace GameEngine {
 		inline void SetEventCallBack(const EventCallBackFn& callback) override { m_Data.EventCallBack = callback; }
 		void SetVSync(bool enabled) override;
 		bool IsVSync() const override;
+		inline GLFWwindow* GetGLFWwindow() const override { return m_Window; }
 	private:
 		virtual void Init(const WindowProps& props);
 		virtual void Shutdown();

@@ -34,6 +34,7 @@ public:
 		// Example of Layer Implementation
 		PushLayer(new ExampleLayer("Onion"));
 		PushLayer(new ExampleLayer());
+		PushOverlay(new GameEngine::ImGuiLayer());
 	}
 
 	~Sandbox()

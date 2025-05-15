@@ -48,6 +48,7 @@ namespace GameEngine {
 			// TODO: glfwTerminate on system shutdown
 			int success = glfwInit();
 			GE_CORE_ASSERT(success, "Could not initialize GLFW!");
+			GE_CORE_INFO("GLFW has been successfully initialized!");
 
 			glfwSetErrorCallback(GLFWErrorCallback);
 
@@ -60,7 +61,8 @@ namespace GameEngine {
 		// glad documentation: https://github.com/Dav1dde/glad
 		// Initialize glad with glfw context
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-		GE_CORE_ASSERT(status, "Failed to initilize glad!");
+		GE_CORE_ASSERT(status, "Failed to initilize Glad!");
+		GE_CORE_INFO("Glad has been successfully initialized!");
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
@@ -151,6 +153,8 @@ namespace GameEngine {
 				MouseMovedEvent event((float)xpos, (float)ypos);
 				data.EventCallBack(event);
 			});
+		
+		GE_CORE_INFO("Window has been successfully initialized!");
 	}
 
 	void WindowsWindow::Shutdown()
