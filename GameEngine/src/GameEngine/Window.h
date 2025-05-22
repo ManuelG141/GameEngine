@@ -37,7 +37,7 @@ namespace GameEngine {
 		virtual void SetEventCallBack(const EventCallBackFn& callback) = 0;
 		virtual void SetVSync(bool enabled) = 0;
 		virtual bool IsVSync() const = 0;
-		virtual GLFWwindow* GetGLFWwindow() const = 0;
+		virtual void* GetNativeWindow() const = 0;
 
 		static Window* Create(const WindowProps& props);
 	};

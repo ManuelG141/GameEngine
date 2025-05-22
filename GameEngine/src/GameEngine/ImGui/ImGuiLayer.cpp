@@ -40,8 +40,8 @@ namespace GameEngine {
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
 
-		GLFWwindow* GLFWwindow = Application::Get().GetWindowObject().GetGLFWwindow();
-		ImGui_ImplGlfw_InitForOpenGL(GLFWwindow, false);
+		GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindowObject().GetNativeWindow());
+		ImGui_ImplGlfw_InitForOpenGL(window, false);
 
 		ImGui_ImplOpenGL3_Init("#version 410");
 	}
@@ -110,10 +110,10 @@ namespace GameEngine {
 
 	bool ImGuiLayer::OnKeyPressedEvent(KeyPressedEvent& e)
 	{
-		GLFWwindow* GLFWwindow = Application::Get().GetWindowObject().GetGLFWwindow();
+		GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindowObject().GetNativeWindow());
 		ImGuiKey imgui_key = ImGui_ImplGlfw_KeyToImGuiKey(e.GetKeyCode(), e.GetScanCode());
 
-		ImGui_ImplGlfw_UpdateKeyModifiers(GLFWwindow);
+		ImGui_ImplGlfw_UpdateKeyModifiers(window);
 
 		m_Io->AddKeyEvent(imgui_key, true);
 		m_Io->SetKeyEventNativeData(imgui_key, e.GetKeyCode(), e.GetScanCode());
@@ -122,10 +122,10 @@ namespace GameEngine {
 
 	bool ImGuiLayer::OnKeyReleasedEvent(KeyReleasedEvent& e)
 	{
-		GLFWwindow* GLFWwindow = Application::Get().GetWindowObject().GetGLFWwindow();
+		GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindowObject().GetNativeWindow());
 		ImGuiKey imgui_key = ImGui_ImplGlfw_KeyToImGuiKey(e.GetKeyCode(), e.GetScanCode());
 
-		ImGui_ImplGlfw_UpdateKeyModifiers(GLFWwindow);
+		ImGui_ImplGlfw_UpdateKeyModifiers(window);
 
 		m_Io->AddKeyEvent(imgui_key, false);
 		m_Io->SetKeyEventNativeData(imgui_key, e.GetKeyCode(), e.GetScanCode());

@@ -9,10 +9,7 @@
 #include "GameEngine/Events/MouseEvent.h"
 #include "GameEngine/Events/KeyEvent.h"
 
-
-
 namespace GameEngine {
-
 	static bool s_GLFWInitialized = false;
 
 	static void GLFWErrorCallback(int error_code, const char* description)
@@ -160,7 +157,7 @@ namespace GameEngine {
 				MouseMovedEvent event((float)xpos, (float)ypos);
 				data.EventCallBack(event);
 			});
-		
+
 		GE_CORE_INFO("Window has been successfully initialized!");
 	}
 
