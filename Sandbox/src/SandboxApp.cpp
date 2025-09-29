@@ -1,4 +1,4 @@
-#include "GameEngine.h" 
+#include "GameEngine.h"
 
 class ExampleLayer : public GameEngine::Layer
 {
