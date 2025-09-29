@@ -9,6 +9,8 @@ public:
 	void OnUpdate() override
 	{
 		//GE_INFO("[{0}] Layer::Update", m_DebugName);
+		if (GameEngine::Input::IsKeyPressed(GE_KEY_TAB))
+			GE_INFO("TAB is pressed!");
 	}
 
 	void OnEvent(GameEngine::Event& event) override

@@ -6,6 +6,10 @@
 #include "GameEngine/Layer.h"
 #include "GameEngine/Window.h"
 
+#include "GameEngine/Input.h"
+#include "GameEngine/KeyCodes.h"
+#include "GameEngine/MouseButtonCodes.h"
+
 #include "GameEngine/Events/ApplicationEvent.h"
 #include "GameEngine/Events/KeyEvent.h"
 #include "GameEngine/Events/MouseEvent.h"

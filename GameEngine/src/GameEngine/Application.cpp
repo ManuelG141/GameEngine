@@ -73,15 +73,15 @@ namespace GameEngine {
 			for (Layer* layer : m_LayerStack)
 				layer->OnUpdate();
 
-			float x = Input::GetMouseX();
+			/*float x = Input::GetMouseX();
 			float y = Input::GetMouseY();
 			GE_CORE_TRACE("MousePosition {0}, {1}", x, y);
-
-			//bool Q = Input::IsKeyPressed(GLFW_KEY_Q);
-			//bool W = Input::IsKeyPressed(GLFW_KEY_W);
-			//bool E = Input::IsKeyPressed(GLFW_KEY_E);
-			//bool R = Input::IsKeyPressed(GLFW_KEY_R);
-			//GE_CORE_TRACE("Q {0}, W {1}, E {2}, R {3}", Q, W, E, R);
+			
+			bool Q = Input::IsKeyPressed(GLFW_KEY_Q);
+			bool W = Input::IsKeyPressed(GLFW_KEY_W);
+			bool E = Input::IsKeyPressed(GLFW_KEY_E);
+			bool R = Input::IsKeyPressed(GLFW_KEY_R);
+			GE_CORE_TRACE("Q {0}, W {1}, E {2}, R {3}", Q, W, E, R);*/
 
 			m_Window->OnUpdate();
 		}
