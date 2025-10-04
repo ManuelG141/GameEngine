@@ -19,6 +19,10 @@ namespace GameEngine {
 
 		m_Window = std::unique_ptr<Window>(Window::Create(props));
 		m_Window->SetEventCallBack(GE_BIND_EVENT_FN(Application::OnEvent));
+
+		// GameEngine Handles the ImGuiLayer now
+		m_ImGuiLayer = new ImGuiLayer();
+		PushOverlay(m_ImGuiLayer);
 		m_Running = true;
 	}
 
@@ -82,6 +86,14 @@ namespace GameEngine {
 			bool E = Input::IsKeyPressed(GLFW_KEY_E);
 			bool R = Input::IsKeyPressed(GLFW_KEY_R);
 			GE_CORE_TRACE("Q {0}, W {1}, E {2}, R {3}", Q, W, E, R);*/
+
+			m_ImGuiLayer->Begin();
+			for (Layer* layer : m_LayerStack)
+			{
+				layer->OnImGuiRender();
+			}
+				
+			m_ImGuiLayer->End();
 
 			m_Window->OnUpdate();
 		}

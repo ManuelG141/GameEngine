@@ -5,7 +5,6 @@ namespace GameEngine {
 
 	LayerStack::LayerStack()
 	{
-		m_LayerInsert = m_Layers.begin();
 	}
 
 	LayerStack::~LayerStack()
@@ -17,7 +16,8 @@ namespace GameEngine {
 	void LayerStack::PushLayer(Layer* layer)
 	{
 		// Insert a new element in the position of "m_LayerInster", and return an iterator to the new position
-		m_LayerInsert = m_Layers.emplace(m_LayerInsert, layer);
+		m_Layers.emplace(m_Layers.begin() + m_LayerInsertIndex, layer);
+		m_LayerInsertIndex++;
 	}
 
 	void LayerStack::PushOverlay(Layer* overlay)
@@ -34,7 +34,7 @@ namespace GameEngine {
 		{
 			// If the layer was found, then erase it and the last position on the iterator
 			m_Layers.erase(it);
-			m_LayerInsert--;
+			m_LayerInsertIndex--;
 		}
 	}
 

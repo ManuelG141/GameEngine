@@ -1,9 +1,8 @@
 #include "gepch.h"
 
-#include "GLFW/glfw3.h"
-#include "imgui.h"
-#include "Platform/OpenGL/imgui_impl_glfw.h"
-#include "Platform/OpenGL/imgui_impl_opengl3.h"
+#include "glad/glad.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
 
 #include "GameEngine/Window.h"
 #include "GameEngine/Core.h"
@@ -11,7 +10,6 @@
 #include "ImGuiLayer.h"
 #include "GameEngine/Application.h"
 #include "Platform/Windows/WindowsWindow.h"
-
 
 namespace GameEngine {
 
@@ -29,21 +27,42 @@ namespace GameEngine {
 	void ImGuiLayer::OnAttach()
 	{
 		GE_CORE_WARN("Initializing Dear ImGui!");
+		float main_scale = ImGui_ImplGlfw_GetContentScaleForMonitor(glfwGetPrimaryMonitor());
+		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
-		m_Context = ImGui::CreateContext();
-		//ImGui::SetCurrentContext(m_Context);
-		//ImGui::SetAllocatorFunctions();
+		ImGui::CreateContext();
 		m_Io = &ImGui::GetIO();
 		m_Io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 		m_Io->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+		m_Io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+		m_Io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+		//io.ConfigViewportsNoAutoMerge = true;
+		//io.ConfigViewportsNoTaskBarIcon = true;
 
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
+		//ImGui::StyleColorsLight();
 
+		// Setup scaling
+		ImGuiStyle& style = ImGui::GetStyle();
+		style.ScaleAllSizes(main_scale);        // Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
+		style.FontScaleDpi = main_scale;        // Set initial font scale. (using io.ConfigDpiScaleFonts=true makes this unnecessary. We leave both here for documentation purpose)
+		#if GLFW_VERSION_MAJOR >= 3 && GLFW_VERSION_MINOR >= 3
+			m_Io->ConfigDpiScaleFonts = true;          // [Experimental] Automatically overwrite style.FontScaleDpi in Begin() when Monitor DPI changes. This will scale fonts but _NOT_ scale sizes/padding for now.
+			m_Io->ConfigDpiScaleViewports = true;      // [Experimental] Scale Dear ImGui and Platform Windows when Monitor DPI changes.
+		#endif
+
+		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+		if (m_Io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			style.WindowRounding = 0.0f;
+			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+		}
+
+		// Setup Platform/Renderer backends
 		GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindowObject().GetNativeWindow());
-		ImGui_ImplGlfw_InitForOpenGL(window, false);
-
-		ImGui_ImplOpenGL3_Init("#version 410");
+		ImGui_ImplGlfw_InitForOpenGL(window, true);
+		ImGui_ImplOpenGL3_Init(s_Glsl_version);
 	}
 
 	void ImGuiLayer::OnDetach()
@@ -54,7 +73,15 @@ namespace GameEngine {
 		ImGui::DestroyContext(m_Context);
 	}
 
-	void ImGuiLayer::OnUpdate()
+	void ImGuiLayer::Begin()
+	{
+		// Start the Dear ImGui frame
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+	}
+
+	void ImGuiLayer::End()
 	{
 		Application& app = Application::Get();
 		m_Io->DisplaySize = ImVec2(app.GetWindowObject().GetWidth(), app.GetWindowObject().GetHeight());
@@ -63,103 +90,26 @@ namespace GameEngine {
 		m_Io->DeltaTime = m_Time > 0.0f ? (time - m_Time) : (1.0f / 60.0f);
 		m_Time = time;
 
-		// Start the Dear ImGui frame
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-
-		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-		if (m_ShowDemo)
-			ImGui::ShowDemoWindow(&m_ShowDemo);
-
 		// Rendering
 		ImGui::Render();
-		ImGui::EndFrame();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		// Update and Render additional Platform Windows
+		// (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
+		//  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
+		if (m_Io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			GLFWwindow* backup_current_context = glfwGetCurrentContext();
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			glfwMakeContextCurrent(backup_current_context);
+		}
 	}
 
-	void ImGuiLayer::OnEvent(Event& event)
+	void ImGuiLayer::OnImGuiRender()
 	{
-		GE_TRACE("[{0}]: {1}", m_DebugName, event.ToString());
-		EventDispatcher dispatcher(event);
-
-		dispatcher.Dispatch<WindowResizeEvent>(GE_BIND_EVENT_FN(ImGuiLayer::OnWindowResizeEvent));
-		dispatcher.Dispatch<WindowCloseEvent>(GE_BIND_EVENT_FN(ImGuiLayer::OnWindowCloseEvent));
-		dispatcher.Dispatch<KeyPressedEvent>(GE_BIND_EVENT_FN(ImGuiLayer::OnKeyPressedEvent));
-		dispatcher.Dispatch<KeyReleasedEvent>(GE_BIND_EVENT_FN(ImGuiLayer::OnKeyReleasedEvent));
-		dispatcher.Dispatch<KeyTypedEvent>(GE_BIND_EVENT_FN(ImGuiLayer::OnKeyTypedEvent));
-		dispatcher.Dispatch<MouseMovedEvent>(GE_BIND_EVENT_FN(ImGuiLayer::OnMouseMovedEvent));
-		dispatcher.Dispatch<MouseScrolledEvent>(GE_BIND_EVENT_FN(ImGuiLayer::OnMouseScrolledEvent));
-		dispatcher.Dispatch<MouseButtonPressedEvent>(GE_BIND_EVENT_FN(ImGuiLayer::OnMouseButtonPressedEvent));
-		dispatcher.Dispatch<MouseButtonReleasedEvent>(GE_BIND_EVENT_FN(ImGuiLayer::OnMouseButtonReleasedEvent));
-	}
-
-	bool ImGuiLayer::OnWindowResizeEvent(WindowResizeEvent& e)
-	{
-		m_Io->DisplaySize = ImVec2(e.GetWidth(), e.GetHeight());
-		m_Io->DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
-		glViewport(0, 0, e.GetWidth(), e.GetHeight());
-
-		return false;
-	}
-
-	bool ImGuiLayer::OnWindowCloseEvent(WindowCloseEvent& e)
-	{
-		return false;
-	}
-
-	bool ImGuiLayer::OnKeyPressedEvent(KeyPressedEvent& e)
-	{
-		GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindowObject().GetNativeWindow());
-		ImGuiKey imgui_key = ImGui_ImplGlfw_KeyToImGuiKey(e.GetKeyCode(), e.GetScanCode());
-
-		ImGui_ImplGlfw_UpdateKeyModifiers(window);
-
-		m_Io->AddKeyEvent(imgui_key, true);
-		m_Io->SetKeyEventNativeData(imgui_key, e.GetKeyCode(), e.GetScanCode());
-		return false;
-	}
-
-	bool ImGuiLayer::OnKeyReleasedEvent(KeyReleasedEvent& e)
-	{
-		GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindowObject().GetNativeWindow());
-		ImGuiKey imgui_key = ImGui_ImplGlfw_KeyToImGuiKey(e.GetKeyCode(), e.GetScanCode());
-
-		ImGui_ImplGlfw_UpdateKeyModifiers(window);
-
-		m_Io->AddKeyEvent(imgui_key, false);
-		m_Io->SetKeyEventNativeData(imgui_key, e.GetKeyCode(), e.GetScanCode());
-		return false;
-	}
-
-	bool ImGuiLayer::OnKeyTypedEvent(KeyTypedEvent& e)
-	{
-		unsigned int codepoint = e.GetKeyCode();
-		m_Io->AddInputCharacter(codepoint);
-		return false;
-	}
-
-	bool ImGuiLayer::OnMouseMovedEvent(MouseMovedEvent& e)
-	{
-		m_Io->AddMousePosEvent(e.GetX(), e.GetY());
-		return false;
-	}
-
-	bool ImGuiLayer::OnMouseScrolledEvent(MouseScrolledEvent& e)
-	{
-		m_Io->AddMouseWheelEvent(e.GetXOffset(), e.GetYOffset());
-		return false;
-	}
-
-	bool ImGuiLayer::OnMouseButtonPressedEvent(MouseButtonPressedEvent& e)
-	{
-		m_Io->AddMouseButtonEvent(e.GetMouseButton(), true);
-		return false;
-	}
-
-	bool ImGuiLayer::OnMouseButtonReleasedEvent(MouseButtonReleasedEvent& e)
-	{
-		m_Io->AddMouseButtonEvent(e.GetMouseButton(), false);
-		return false;
+		// For now just show the demo window
+		static bool show = true;
+		ImGui::ShowDemoWindow(&show);
 	}
 }

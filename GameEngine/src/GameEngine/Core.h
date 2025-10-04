@@ -5,8 +5,10 @@
 #ifdef GE_PLATFORM_WINDOWS
 	#ifdef GE_BUILD_DLL
 		#define GE_API __declspec(dllexport)
+		#define IMGUI_API __declspec(dllexport) //ImGui library should also define as dllexport in order to correctly export the symbols
 	#else
 		#define GE_API __declspec(dllimport)
+		#define IMGUI_API __declspec(dllimport)
 	#endif
 #else
 	#error Only Windows is supported!

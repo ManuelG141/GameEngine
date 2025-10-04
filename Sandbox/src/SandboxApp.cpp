@@ -1,4 +1,5 @@
 #include "GameEngine.h"
+#include "imgui/imgui.h"
 
 class ExampleLayer : public GameEngine::Layer
 {
@@ -6,14 +7,21 @@ public:
 	ExampleLayer(const char* name = "Example")
 		: Layer(name) {}
 
-	void OnUpdate() override
+	virtual void OnUpdate() override
 	{
 		//GE_INFO("[{0}] Layer::Update", m_DebugName);
 		if (GameEngine::Input::IsKeyPressed(GE_KEY_TAB))
 			GE_INFO("TAB is pressed!");
 	}
 
-	void OnEvent(GameEngine::Event& event) override
+	virtual void OnImGuiRender() override
+	{
+		ImGui::Begin("Test");
+		ImGui::Text("Hello world");
+		ImGui::End();
+	}
+
+	virtual void OnEvent(GameEngine::Event& event) override
 	{
 		GE_TRACE("[{0}]: {1}", m_DebugName, event.ToString());
 	}
@@ -32,8 +40,6 @@ public:
 
 		// Example of Layer Implementation
 		PushLayer(new ExampleLayer());
-
-		PushOverlay(new GameEngine::ImGuiLayer());
 	}
 
 	~Sandbox()

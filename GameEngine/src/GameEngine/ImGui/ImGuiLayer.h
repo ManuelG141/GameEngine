@@ -6,13 +6,8 @@
 #include "GameEngine/Events/KeyEvent.h"
 #include "GameEngine/Events/MouseEvent.h"
 
-struct ImGuiContext;
-struct ImGuiIO;
-
-enum ImGuiKey;
-
-ImGuiKey ImGui_ImplGlfw_KeyToImGuiKey(int keycode, int scancode);
-void ImGui_ImplGlfw_UpdateKeyModifiers(GLFWwindow* window);
+struct ImGuiContext; // Dear ImGui context (opaque structure, unless including imgui_internal.h)
+struct ImGuiIO;      // Main configuration and I/O between your application and ImGui (also see: ImGuiPlatformIO)
 
 namespace GameEngine {
 
@@ -22,29 +17,17 @@ namespace GameEngine {
 		ImGuiLayer(bool showDemo = true);
 		~ImGuiLayer();
 
-		void OnAttach() override;
-		void OnDetach() override;
-		void OnUpdate() override;
-		void OnEvent(Event& event) override;
-	private:
-		// Application Events
-		bool OnWindowResizeEvent(WindowResizeEvent& e);
-		bool OnWindowCloseEvent(WindowCloseEvent& e);
+		virtual void OnAttach() override;
+		virtual void OnDetach() override;
+		virtual void OnImGuiRender() override;
 
-		// Key Events
-		bool OnKeyPressedEvent(KeyPressedEvent& e);
-		bool OnKeyReleasedEvent(KeyReleasedEvent& e);
-		bool OnKeyTypedEvent(KeyTypedEvent& e);
-
-		// Mouse Events
-		bool OnMouseMovedEvent(MouseMovedEvent& e);
-		bool OnMouseScrolledEvent(MouseScrolledEvent& e);
-		bool OnMouseButtonPressedEvent(MouseButtonPressedEvent& e);
-		bool OnMouseButtonReleasedEvent(MouseButtonReleasedEvent& e);
+		void Begin();
+		void End();
 	private:
 		float m_Time = 0.0f;
 		ImGuiContext* m_Context = nullptr;
 		ImGuiIO* m_Io = nullptr;
 		bool m_ShowDemo;
+		static constexpr const char* s_Glsl_version = "#version 410";
 	};
 }
