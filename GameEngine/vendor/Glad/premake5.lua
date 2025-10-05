@@ -22,9 +22,9 @@ project "Glad"
 	filter "system:windows"
 		systemversion "latest"
 
-	filter { "system:windows", "configurations:Release or configurations:Dist" }
+	filter {"configurations:Release* or configurations:Dist*" }
 		runtime "Release"
 		optimize "On"
-	filter { "system:windows", "configurations:Debug" }
+	filter {"configurations:Debug*" }
 		runtime "Debug"
 		symbols "On"

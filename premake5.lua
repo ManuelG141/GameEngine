@@ -8,13 +8,16 @@ workspace "GameEngine"
 	{
 		"Debug",
 		"Release",
-		"Dist"
+		"Dist",
+		"DebugDLL",
+		"ReleaseDLL",
+		"DistDLL",
 	}
 
 	startproject "Sandbox" -- Start project when opening the solution
 
 --  List with Tokes (Visual Studio Macros): https://premake.github.io/docs/Tokens/
-outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+outputdir = "%{cfg.kind}/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
@@ -34,9 +37,8 @@ group ""
 
 project "GameEngine"
 	location "GameEngine"
-	kind "SharedLib"
 	language "C++"
-	staticruntime "Off"  -- Linking the runtime libraries staticly
+	cppdialect "C++17"
 
 	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
@@ -71,36 +73,41 @@ project "GameEngine"
 		"opengl32.lib"
 	}
 
+	defines "_CRT_SECURE_NO_WARNINGS" -- To avoid warnings on ImGui compilation
+
 	filter "system:windows" -- this configurations are just for windows
-		cppdialect "C++17"
 		systemversion "latest"
 		buildoptions "/utf-8" -- Command line additional options
 
-		defines
-		{
-			"GE_PLATFORM_WINDOWS",
-			"GE_BUILD_DLL",
-			"IMGUI_IMPL_OPENGL_LOADER_CUSTOM" -- Temporal, just to test ImGui before properly setting up the renderer abstraction
-		}
+		defines "GE_PLATFORM_WINDOWS"
+
+	-- Change configuration type depending on the configuration
+	filter "not *DLL"
+		kind "StaticLib"
+		staticruntime "On"
+	filter "*DLL"
+		defines "GE_BUILD_DLL"
+		kind "SharedLib"
+		staticruntime "Off"
 
 		postbuildcommands
 		{
-			("{MKDIR} ../bin/" .. outputdir .. "/Sandbox"),
-			("{COPYFILE} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox")
+			("{MKDIR} ../bin/ConsoleApp/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"),
+			("{COPYFILE} %{cfg.buildtarget.relpath} ../bin/ConsoleApp/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}")
 		}
 
 	-- Preprocessor definitions per configuration
-	filter "configurations:Debug"
+	filter "configurations:Debug*"
 		defines "GE_DEBUG"
 		runtime "Debug"
 		symbols "On"
 
-	filter "configurations:Release"
+	filter "configurations:Release*"
 		defines "GE_RELEASE"
 		runtime "Release"
 		optimize "On"
 
-	filter "configurations:Dist"
+	filter "configurations:Dist*"
 		defines "GE_DIST"
 		runtime "Release"
 		optimize "On"
@@ -109,10 +116,10 @@ project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
-	staticruntime "Off"
+	cppdialect "C++17"
 
-	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir ("%{wks.location}/bin/" .. outputdir )
+	objdir ("%{wks.location}/bin-int/" .. outputdir )
 
 	files 
 	{
@@ -134,28 +141,30 @@ project "Sandbox"
 	}
 
 	filter "system:windows" -- this configurations are just for windows
-		cppdialect "C++17"
-		--staticruntime "On"  -- Linking the runtime libraries staticly
 		systemversion "latest"
 		buildoptions "/utf-8" -- Command line additional options
 
-		defines
-		{
-			"GE_PLATFORM_WINDOWS"
-		}
+		defines "GE_PLATFORM_WINDOWS"
+
+	-- Change configuration type depending on the configuration
+	filter "*DLL"
+		defines "GE_IMPORT_DLL"
+		staticruntime "Off"
+	filter "not *DLL"
+		staticruntime "On"
 
 	-- Preprocessor definitions per configuration
-	filter "configurations:Debug"
+	filter "configurations:Debug*"
 		defines "GE_DEBUG"
 		runtime "Debug"
 		symbols "On"
 
-	filter "configurations:Release"
+	filter "configurations:Release*"
 		defines "GE_RELEASE"
 		runtime "Release"
 		optimize "On"
 
-	filter "configurations:Dist"
+	filter "configurations:Dist*"
 		defines "GE_DIST"
 		runtime "Release"
 		optimize "On"

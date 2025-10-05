@@ -3,12 +3,15 @@
 // Macro to automate the DLL import and export
 // If these preprocessor definitions aren't defined, an error will be triggered!
 #ifdef GE_PLATFORM_WINDOWS
-	#ifdef GE_BUILD_DLL
+	#ifdef GE_BUILD_DLL // defined in the Engine to export symbols
 		#define GE_API __declspec(dllexport)
 		#define IMGUI_API __declspec(dllexport) //ImGui library should also define as dllexport in order to correctly export the symbols
-	#else
+	#elif defined GE_IMPORT_DLL // defined in Sandbox to import symbols
 		#define GE_API __declspec(dllimport)
 		#define IMGUI_API __declspec(dllimport)
+	#else // when compiled as static lib
+		#define GE_API
+		#define IMGUI_API
 	#endif
 #else
 	#error Only Windows is supported!

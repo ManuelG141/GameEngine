@@ -84,7 +84,8 @@ namespace GameEngine {
 	void ImGuiLayer::End()
 	{
 		Application& app = Application::Get();
-		m_Io->DisplaySize = ImVec2(app.GetWindowObject().GetWidth(), app.GetWindowObject().GetHeight());
+		// Cast unsigned int to float to avoid warnings
+		m_Io->DisplaySize = ImVec2((float)app.GetWindowObject().GetWidth(), (float)app.GetWindowObject().GetHeight());
 
 		float time = (float)glfwGetTime();
 		m_Io->DeltaTime = m_Time > 0.0f ? (time - m_Time) : (1.0f / 60.0f);
