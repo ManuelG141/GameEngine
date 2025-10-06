@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 // "WindowsWindow include GLFW
 #include "WindowsWindow.h"
+#include "Platform/OpenGL/OpenGLContext.h"
 
 #include "GameEngine/Events/ApplicationEvent.h"
 #include "GameEngine/Events/MouseEvent.h"
@@ -53,13 +54,10 @@ namespace GameEngine {
 		}
 
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
-		glfwMakeContextCurrent(m_Window);
-
-		// glad documentation: https://github.com/Dav1dde/glad
-		// Initialize glad with glfw context
-		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-		GE_CORE_ASSERT(status, "Failed to initilize Glad!");
-		GE_CORE_INFO("Glad has been successfully initialized!");
+		
+		// Create context and then initialize it
+		m_Context = new OpenGLContext(m_Window);
+		m_Context->Init();
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
@@ -169,7 +167,7 @@ namespace GameEngine {
 	void WindowsWindow::OnUpdate()
 	{
 		glfwPollEvents();
-		glfwSwapBuffers(m_Window); // https://www.glfw.org/docs/latest/window_guide.html#buffer_swap
+		m_Context->SwapBuffers();
 	}
 
 	void WindowsWindow::SetVSync(bool enabled)
