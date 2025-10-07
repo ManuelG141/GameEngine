@@ -39,11 +39,12 @@ namespace GameEngine {
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
 
-		GE_CORE_INFO("Creating window \"{0}\" ({1}, {2})", props.Title, props.Width, props.Height);
+		GE_CORE_WARN("Creating window \"{0}\" ({1}, {2})", props.Title, props.Width, props.Height);
 
 		if (!s_GLFWInitialized)
 		{
 			// TODO: glfwTerminate on system shutdown
+			GE_CORE_WARN("Initializing GLFW!");
 			int success = glfwInit();
 			GE_CORE_ASSERT(success, "Could not initialize GLFW!");
 			GE_CORE_INFO("GLFW has been successfully initialized!");
@@ -156,7 +157,7 @@ namespace GameEngine {
 				data.EventCallBack(event);
 			});
 
-		GE_CORE_INFO("Window has been successfully initialized!");
+		GE_CORE_INFO("Window \"{0}\" has been successfully initialized!", props.Title);
 	}
 
 	void WindowsWindow::Shutdown()

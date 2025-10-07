@@ -63,6 +63,7 @@ namespace GameEngine {
 		GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindowObject().GetNativeWindow());
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init(s_Glsl_version);
+		GE_CORE_INFO("ImGui has been successfully initialized!");
 	}
 
 	void ImGuiLayer::OnDetach()

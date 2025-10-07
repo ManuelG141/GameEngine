@@ -4,9 +4,11 @@
 
 #include "GameEngine/Log.h"
 
-#include "GLFW/glfw3.h"
+#include <glad/glad.h> 
+#include <GLFW/glfw3.h>
 
 #include "Input.h"
+#include "ChessBoard.h"
 
 namespace GameEngine {
 
@@ -24,6 +26,25 @@ namespace GameEngine {
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
 		m_Running = true;
+
+		// Draw a "triangle" for testing
+		// Vertex Array
+		glGenVertexArrays(1, &m_VertexArray);
+		glBindVertexArray(m_VertexArray);
+
+		// Vertex Buffer
+		glGenBuffers(1, &m_VertexBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
+
+		glBufferData(GL_ARRAY_BUFFER, sizeof(ChessBoard::vertices), ChessBoard::vertices, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(ChessBoard::vertices[0]), nullptr);
+
+		// Index Buffer
+		glGenBuffers(1, &m_IndexBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
+
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ChessBoard::indices), ChessBoard::indices, GL_STATIC_DRAW);
 	}
 
 	Application::~Application() {}
@@ -49,7 +70,7 @@ namespace GameEngine {
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(GE_BIND_EVENT_FN(Application::OnWindowClose));
 
-		GE_CORE_TRACE(e.ToString());
+		//GE_CORE_TRACE(e.ToString());
 
 		// Send the event to all the layers and stop propagating it if some layer handles it
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
@@ -70,22 +91,15 @@ namespace GameEngine {
 	{
 		while (m_Running)
 		{
-			glClearColor(0.5, 0.5, 0.5, 1);
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			glBindVertexArray(m_VertexArray);
+			glDrawElements(GL_TRIANGLES, ChessBoard::totalIndices, GL_UNSIGNED_INT, nullptr);
 
 			// Update every layer before updating the window
 			for (Layer* layer : m_LayerStack)
 				layer->OnUpdate();
-
-			/*float x = Input::GetMouseX();
-			float y = Input::GetMouseY();
-			GE_CORE_TRACE("MousePosition {0}, {1}", x, y);
-			
-			bool Q = Input::IsKeyPressed(GLFW_KEY_Q);
-			bool W = Input::IsKeyPressed(GLFW_KEY_W);
-			bool E = Input::IsKeyPressed(GLFW_KEY_E);
-			bool R = Input::IsKeyPressed(GLFW_KEY_R);
-			GE_CORE_TRACE("Q {0}, W {1}, E {2}, R {3}", Q, W, E, R);*/
 
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerStack)

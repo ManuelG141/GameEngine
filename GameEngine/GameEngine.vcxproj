@@ -291,6 +291,7 @@ copy /B /Y ..\bin\SharedLib\DistDLL-windows-x86_64\GameEngine\GameEngine.dll ..\
   <ItemGroup>
     <ClInclude Include="src\GameEngine.h" />
     <ClInclude Include="src\GameEngine\Application.h" />
+    <ClInclude Include="src\GameEngine\ChessBoard.h" />
     <ClInclude Include="src\GameEngine\Core.h" />
     <ClInclude Include="src\GameEngine\EntryPoint.h" />
     <ClInclude Include="src\GameEngine\Events\ApplicationEvent.h" />

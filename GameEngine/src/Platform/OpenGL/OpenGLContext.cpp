@@ -18,9 +18,15 @@ namespace GameEngine {
 
 		// glad documentation: https://github.com/Dav1dde/glad
 		// Initialize glad with glfw context
+		GE_CORE_WARN("Initializing glad!");
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		GE_CORE_ASSERT(status, "Failed to initilize Glad!");
 		GE_CORE_INFO("Glad has been successfully initialized!");
+
+		GE_CORE_INFO("OpenGL Info:");
+		GE_CORE_INFO("  Vendor: {0}", (const char*)glGetString(GL_VENDOR));
+		GE_CORE_INFO("  Renderer: {0}", (const char*)glGetString(GL_RENDERER));
+		GE_CORE_INFO("  Version: {0}", (const char*)glGetString(GL_VERSION));
 	}
 
 	void OpenGLContext::SwapBuffers()
