@@ -27,7 +27,7 @@ namespace GameEngine {
 		PushOverlay(m_ImGuiLayer);
 		m_Running = true;
 
-		// Draw a "triangle" for testing
+		// Draw a "ChessBoard" for testing
 		// Vertex Array
 		glGenVertexArrays(1, &m_VertexArray);
 		glBindVertexArray(m_VertexArray);
@@ -44,7 +44,21 @@ namespace GameEngine {
 		glGenBuffers(1, &m_IndexBuffer);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
 
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ChessBoard::indices), ChessBoard::indices, GL_STATIC_DRAW);
+		//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ChessBoard::whiteIndices), ChessBoard::whiteIndices, GL_STATIC_DRAW);
+		// Create a buffer to store all index data
+		glBufferData(
+			GL_ELEMENT_ARRAY_BUFFER,
+			sizeof(ChessBoard::whiteIndices) + sizeof(ChessBoard::blackIndices),
+			0,
+			GL_STATIC_DRAW
+		);
+
+		// Store the index data inside one buffer
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(ChessBoard::whiteIndices), ChessBoard::whiteIndices); // from 0 to size of white indices
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ChessBoard::whiteIndices), sizeof(ChessBoard::blackIndices), ChessBoard::blackIndices); // from end of white indices to black indices
+		
+		m_Shaders["whiteSqr"] = new Shader(ChessBoard::vertexSrc, ChessBoard::whiteFragmentSrc);
+		m_Shaders["blackSqr"] = new Shader(ChessBoard::vertexSrc, ChessBoard::blackFragmentSrc);
 	}
 
 	Application::~Application() {}
@@ -69,7 +83,7 @@ namespace GameEngine {
 	{
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(GE_BIND_EVENT_FN(Application::OnWindowClose));
-
+		dispatcher.Dispatch<WindowResizeEvent>(GE_BIND_EVENT_FN(Application::OnWindowResize));
 		//GE_CORE_TRACE(e.ToString());
 
 		// Send the event to all the layers and stop propagating it if some layer handles it
@@ -95,7 +109,11 @@ namespace GameEngine {
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			glBindVertexArray(m_VertexArray);
-			glDrawElements(GL_TRIANGLES, ChessBoard::totalIndices, GL_UNSIGNED_INT, nullptr);
+			// Draw "white" and "black" squares of the ChessBoard with the corresponding data and Shaders
+			m_Shaders["whiteSqr"]->Bind();
+			glDrawElements(GL_TRIANGLES, ChessBoard::totalIndices, GL_UNSIGNED_INT, nullptr); // Draw white indices
+			m_Shaders["blackSqr"]->Bind();
+			glDrawElements(GL_TRIANGLES, ChessBoard::totalIndices, GL_UNSIGNED_INT, (void*)sizeof(ChessBoard::whiteIndices)); // Draw black indices
 
 			// Update every layer before updating the window
 			for (Layer* layer : m_LayerStack)
@@ -116,6 +134,12 @@ namespace GameEngine {
 	bool Application::OnWindowClose(WindowCloseEvent& e)
 	{
 		m_Running = false;
+		return true;
+	}
+
+	bool Application::OnWindowResize(WindowResizeEvent& e)
+	{
+		glViewport(0, 0, e.GetWidth(), e.GetHeight()); // Change the view port on window resize
 		return true;
 	}
 }

@@ -6,6 +6,7 @@
 #include "GameEngine/Events/Event.h"
 #include "GameEngine/Events/ApplicationEvent.h"
 #include "GameEngine/ImGui/ImGuiLayer.h"
+#include "GameEngine/Renderer/Shader.h"
 
 namespace GameEngine {
 
@@ -31,6 +32,7 @@ namespace GameEngine {
 		inline static Application& Get() { return *s_Instance; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
+		bool OnWindowResize(WindowResizeEvent& e);
 
 		std::unique_ptr<Window> m_Window;
 		ImGuiLayer* m_ImGuiLayer;
@@ -38,6 +40,8 @@ namespace GameEngine {
 		LayerStack m_LayerStack;
 
 		unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+
+		std::unordered_map<std::string, Shader*> m_Shaders; // To store multiple shaders
 	private:
 		static Application* s_Instance; // To make Application a singleton class
 	};
