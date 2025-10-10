@@ -7,6 +7,7 @@
 #include "GameEngine/Events/ApplicationEvent.h"
 #include "GameEngine/ImGui/ImGuiLayer.h"
 #include "GameEngine/Renderer/Shader.h"
+#include "GameEngine/Renderer/Buffer.h"
 
 namespace GameEngine {
 
@@ -39,8 +40,10 @@ namespace GameEngine {
 		bool m_Running;
 		LayerStack m_LayerStack;
 
-		unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+		unsigned int m_VertexArray;
+		std::unique_ptr<VertexBuffer> m_VertexBuffer;
 
+		std::unordered_map<std::string, IndexBuffer*> m_IndexBuffers;
 		std::unordered_map<std::string, Shader*> m_Shaders; // To store multiple shaders
 	private:
 		static Application* s_Instance; // To make Application a singleton class

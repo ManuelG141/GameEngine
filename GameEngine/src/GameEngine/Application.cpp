@@ -32,33 +32,37 @@ namespace GameEngine {
 		glGenVertexArrays(1, &m_VertexArray);
 		glBindVertexArray(m_VertexArray);
 
-		// Vertex Buffer
-		glGenBuffers(1, &m_VertexBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
+		// Create Vertex Buffer and bind it
+		m_VertexBuffer.reset(VertexBuffer::Create(ChessBoard::vertices, sizeof(ChessBoard::vertices)));
+		m_VertexBuffer->Bind();
 
-		glBufferData(GL_ARRAY_BUFFER, sizeof(ChessBoard::vertices), ChessBoard::vertices, GL_STATIC_DRAW);
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(ChessBoard::vertices[0]), nullptr);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+		
+		// Create Index buffer
+		m_IndexBuffers["white"] = IndexBuffer::Create(ChessBoard::whiteIndices, ChessBoard::totalIndices);
+		m_IndexBuffers["black"] = IndexBuffer::Create(ChessBoard::blackIndices, ChessBoard::totalIndices);
 
-		// Index Buffer
-		glGenBuffers(1, &m_IndexBuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
-
+		// Code using SubBuffers
+		//glGenBuffers(1, &m_IndexBuffer);
+		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
+		//
 		//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ChessBoard::whiteIndices), ChessBoard::whiteIndices, GL_STATIC_DRAW);
 		// Create a buffer to store all index data
-		glBufferData(
-			GL_ELEMENT_ARRAY_BUFFER,
-			sizeof(ChessBoard::whiteIndices) + sizeof(ChessBoard::blackIndices),
-			0,
-			GL_STATIC_DRAW
-		);
-
+		//glBufferData(
+		//	GL_ELEMENT_ARRAY_BUFFER,
+		//	sizeof(ChessBoard::whiteIndices) + sizeof(ChessBoard::blackIndices),
+		//	0,
+		//	GL_STATIC_DRAW
+		//);
+		//
 		// Store the index data inside one buffer
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(ChessBoard::whiteIndices), ChessBoard::whiteIndices); // from 0 to size of white indices
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ChessBoard::whiteIndices), sizeof(ChessBoard::blackIndices), ChessBoard::blackIndices); // from end of white indices to black indices
-		
-		m_Shaders["whiteSqr"] = new Shader(ChessBoard::vertexSrc, ChessBoard::whiteFragmentSrc);
-		m_Shaders["blackSqr"] = new Shader(ChessBoard::vertexSrc, ChessBoard::blackFragmentSrc);
+		//glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(ChessBoard::whiteIndices), ChessBoard::whiteIndices); // from 0 to size of white indices
+		//glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ChessBoard::whiteIndices), sizeof(ChessBoard::blackIndices), ChessBoard::blackIndices); // from end of white indices to black indices
+
+		// Create Shader class to use it later
+		m_Shaders["white"] = new Shader(ChessBoard::vertexSrc, ChessBoard::whiteFragmentSrc);
+		m_Shaders["black"] = new Shader(ChessBoard::vertexSrc, ChessBoard::blackFragmentSrc);
 	}
 
 	Application::~Application() {}
@@ -110,10 +114,19 @@ namespace GameEngine {
 
 			glBindVertexArray(m_VertexArray);
 			// Draw "white" and "black" squares of the ChessBoard with the corresponding data and Shaders
-			m_Shaders["whiteSqr"]->Bind();
-			glDrawElements(GL_TRIANGLES, ChessBoard::totalIndices, GL_UNSIGNED_INT, nullptr); // Draw white indices
-			m_Shaders["blackSqr"]->Bind();
-			glDrawElements(GL_TRIANGLES, ChessBoard::totalIndices, GL_UNSIGNED_INT, (void*)sizeof(ChessBoard::whiteIndices)); // Draw black indices
+			m_IndexBuffers["white"]->Bind();
+			m_Shaders["white"]->Bind();
+			glDrawElements(GL_TRIANGLES, m_IndexBuffers["white"]->GetCount(), GL_UNSIGNED_INT, nullptr); // Draw white indices
+			
+			m_IndexBuffers["black"]->Bind();
+			m_Shaders["black"]->Bind();
+			glDrawElements(GL_TRIANGLES, m_IndexBuffers["black"]->GetCount(), GL_UNSIGNED_INT, nullptr); // Draw white indices
+			
+			// Code with SubBuffers
+			//m_Shaders["white"]->Bind();
+			//glDrawElements(GL_TRIANGLES, ChessBoard::totalIndices, GL_UNSIGNED_INT, nullptr);
+			//m_Shaders["black"]->Bind();
+			//glDrawElements(GL_TRIANGLES, ChessBoard::totalIndices, GL_UNSIGNED_INT, (void*)sizeof(ChessBoard::whiteIndices)); // Draw black indices
 
 			// Update every layer before updating the window
 			for (Layer* layer : m_LayerStack)

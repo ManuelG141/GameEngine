@@ -13,6 +13,5 @@ namespace GameEngine {
 		void Unbind() const;
 	private:
 		uint32_t m_RendererID;
-
 	};
 }

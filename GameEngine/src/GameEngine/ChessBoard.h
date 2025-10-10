@@ -6,7 +6,7 @@ namespace ChessBoard {
 	constexpr float boardWidth = 1.5f;
 	constexpr float sqSze = boardWidth/8;
 	
-	constexpr float vertices[3 * 81] = {
+	float vertices[3 * 81] = {
 		//      x,         y,    z,
 		xOffset +      0.0f, yOffset -      0.0f, 0.0f,
 		xOffset +     sqSze, yOffset -      0.0f, 0.0f,
@@ -101,7 +101,7 @@ namespace ChessBoard {
 
 	constexpr unsigned int totalIndices = 3 * 64;
 
-	constexpr unsigned int whiteIndices[totalIndices] = {
+	unsigned int whiteIndices[totalIndices] = {
 		 0,  9, 10,
 		 0,  1, 10,
 		 2, 11, 12,
@@ -175,7 +175,7 @@ namespace ChessBoard {
 		70, 71, 80
 	};
 
-	constexpr unsigned int blackIndices[totalIndices] = {
+	unsigned int blackIndices[totalIndices] = {
 		 1, 10, 11,
 		 1,  2, 11,
 		 3, 12, 13,
@@ -265,32 +265,30 @@ namespace ChessBoard {
 		)";
 
 	constexpr const char* whiteFragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
+		#version 330 core
 
-			//in vec3 v_Position;
+		layout(location = 0) out vec4 color;
 
-			void main()
-			{
-				//color = vec4((v_Position + 0.75)/1.5, 1.0); // To translate from pixel position to (0-1) range
-				color = vec4(0.921, 0.925, 0.816, 1.0); // Chess white square color
-			}
+		//in vec3 v_Position;
 
-		)";
+		void main()
+		{
+			//color = vec4((v_Position + 0.75)/1.5, 1.0); // To translate from pixel position to (0-1) range
+			color = vec4(0.921, 0.925, 0.816, 1.0); // Chess white square color
+		}
+	)";
 
 	constexpr const char* blackFragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
+		#version 330 core
 
-			in vec3 v_Position;
+		layout(location = 0) out vec4 color;
 
-			void main()
-			{
-				//color = vec4(1.0, 1.0, 1.0, 1.0); // Pure black color
-				color = vec4(0.456, 0.584, 0.321, 1.0); // Chess black square color
-			}
+		in vec3 v_Position;
 
-		)";
+		void main()
+		{
+			//color = vec4(1.0, 1.0, 1.0, 1.0); // Pure black color
+			color = vec4(0.456, 0.584, 0.321, 1.0); // Chess black square color
+		}
+	)";
 }
