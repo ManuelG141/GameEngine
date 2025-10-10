@@ -61,8 +61,8 @@ namespace GameEngine {
 		//glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ChessBoard::whiteIndices), sizeof(ChessBoard::blackIndices), ChessBoard::blackIndices); // from end of white indices to black indices
 
 		// Create Shader class to use it later
-		m_Shaders["white"] = new Shader(ChessBoard::vertexSrc, ChessBoard::whiteFragmentSrc);
-		m_Shaders["black"] = new Shader(ChessBoard::vertexSrc, ChessBoard::blackFragmentSrc);
+		m_Shaders["white"] = Shader::Create(ChessBoard::vertexSrc, ChessBoard::whiteFragmentSrc);
+		m_Shaders["black"] = Shader::Create(ChessBoard::vertexSrc, ChessBoard::blackFragmentSrc);
 	}
 
 	Application::~Application() {}

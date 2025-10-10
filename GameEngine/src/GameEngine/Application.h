@@ -41,8 +41,8 @@ namespace GameEngine {
 		LayerStack m_LayerStack;
 
 		unsigned int m_VertexArray;
-		std::unique_ptr<VertexBuffer> m_VertexBuffer;
 
+		std::unique_ptr<VertexBuffer> m_VertexBuffer;
 		std::unordered_map<std::string, IndexBuffer*> m_IndexBuffers;
 		std::unordered_map<std::string, Shader*> m_Shaders; // To store multiple shaders
 	private:
