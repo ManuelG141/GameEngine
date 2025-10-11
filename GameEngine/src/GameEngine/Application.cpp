@@ -8,9 +8,32 @@
 #include <GLFW/glfw3.h>
 
 #include "Input.h"
-#include "ChessBoard.h"
+#include "GameEngine/Renderer/Examples/ChessBoard.h"
+#include "GameEngine/Renderer/Examples/Triangle.h"
 
 namespace GameEngine {
+
+	static GLenum ShaderType2GlType(const ShaderDataType& type)
+	{
+		switch (type)
+		{
+			case ShaderDataType::None:		return GL_NONE;
+			case ShaderDataType::Float:		return GL_FLOAT;
+			case ShaderDataType::Float2:	return GL_FLOAT;
+			case ShaderDataType::Float3:	return GL_FLOAT;
+			case ShaderDataType::Float4:	return GL_FLOAT;
+			case ShaderDataType::Int:		return GL_INT;
+			case ShaderDataType::Int2:		return GL_INT;
+			case ShaderDataType::Int3:		return GL_INT;
+			case ShaderDataType::Int4:		return GL_INT;
+			case ShaderDataType::Mat3:		return GL_FLOAT;
+			case ShaderDataType::Mat4:		return GL_FLOAT;
+			case ShaderDataType::Bool:		return GL_BOOL;
+		}
+
+		GE_CORE_ASSERT(false, "Unknown ShaderDataType!");
+		return GL_NONE;
+	}
 
 	Application* Application::s_Instance = nullptr;
 
@@ -33,36 +56,57 @@ namespace GameEngine {
 		glBindVertexArray(m_VertexArray);
 
 		// Create Vertex Buffer and bind it
-		m_VertexBuffer.reset(VertexBuffer::Create(ChessBoard::vertices, sizeof(ChessBoard::vertices)));
+		m_VertexBuffer.reset(VertexBuffer::Create(Triangle::vertices, sizeof(Triangle::vertices)));
 		m_VertexBuffer->Bind();
 
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-		
+		{ // Scope
+			BufferLayout layout = { // This get destroyed after hitting the end of this scope
+				{ShaderDataType::Float3, "a_Position"},
+				{ShaderDataType::Float4, "a_Color"}
+			};
+
+			m_VertexBuffer->SetLayout(layout);
+		} // Scope
+
+		unsigned int index = 0;
+		for (const auto& element : m_VertexBuffer->GetLayout()) // possible setting iterator methods
+		{
+			glEnableVertexAttribArray(index);
+			glVertexAttribPointer(
+				index,
+				element.GetComponentCount(),
+				ShaderType2GlType(element.Type),
+				element.Normalized ? GL_TRUE : GL_FALSE,
+				m_VertexBuffer->GetLayout().GetStride(),
+				(void*)element.Offset
+			);
+			index++;
+		}
+
 		// Create Index buffer
-		m_IndexBuffers["white"] = IndexBuffer::Create(ChessBoard::whiteIndices, ChessBoard::totalIndices);
-		m_IndexBuffers["black"] = IndexBuffer::Create(ChessBoard::blackIndices, ChessBoard::totalIndices);
+		m_IndexBuffers["white"] = IndexBuffer::Create(Triangle::indices, Triangle::totalIndices);
+		m_IndexBuffers["black"] = IndexBuffer::Create(Triangle::indices, Triangle::totalIndices);
 
 		// Code using SubBuffers
 		//glGenBuffers(1, &m_IndexBuffer);
 		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
 		//
-		//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ChessBoard::whiteIndices), ChessBoard::whiteIndices, GL_STATIC_DRAW);
+		//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Triangle::indices), Triangle::indices, GL_STATIC_DRAW);
 		// Create a buffer to store all index data
 		//glBufferData(
 		//	GL_ELEMENT_ARRAY_BUFFER,
-		//	sizeof(ChessBoard::whiteIndices) + sizeof(ChessBoard::blackIndices),
+		//	sizeof(Triangle::indices) + sizeof(Triangle::blackIndices),
 		//	0,
 		//	GL_STATIC_DRAW
 		//);
 		//
 		// Store the index data inside one buffer
-		//glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(ChessBoard::whiteIndices), ChessBoard::whiteIndices); // from 0 to size of white indices
-		//glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ChessBoard::whiteIndices), sizeof(ChessBoard::blackIndices), ChessBoard::blackIndices); // from end of white indices to black indices
+		//glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(Triangle::indices), Triangle::indices); // from 0 to size of white indices
+		//glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Triangle::indices), sizeof(Triangle::blackIndices), Triangle::blackIndices); // from end of white indices to black indices
 
 		// Create Shader class to use it later
-		m_Shaders["white"] = Shader::Create(ChessBoard::vertexSrc, ChessBoard::whiteFragmentSrc);
-		m_Shaders["black"] = Shader::Create(ChessBoard::vertexSrc, ChessBoard::blackFragmentSrc);
+		m_Shaders["white"] = Shader::Create(Triangle::vertexSrc, Triangle::fragmentSrc);
+		m_Shaders["black"] = Shader::Create(Triangle::vertexSrc, Triangle::fragmentSrc);
 	}
 
 	Application::~Application() {}

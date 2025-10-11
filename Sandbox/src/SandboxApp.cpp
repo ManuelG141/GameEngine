@@ -36,7 +36,7 @@ public:
 		: Application(GameEngine::WindowProps("Sandbox", 720U, 720U))
 	{
 		// Disable/Enable VSync
-		this->SetVSync(false);
+		this->SetVSync(true);
 
 		// Example of Layer Implementation
 		PushLayer(new ExampleLayer());
