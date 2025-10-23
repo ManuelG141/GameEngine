@@ -3,9 +3,30 @@
 #include "OpenGLShader.h"
 #include "GameEngine/Log.h"
 
-#include <glad/glad.h>
-
 namespace GameEngine {
+
+	GLenum OpenGLShader::ShaderType2GlType(const ShaderDataType& type)
+	{
+		switch (type)
+		{
+			case ShaderDataType::None:		return GL_NONE;
+			case ShaderDataType::Float:		return GL_FLOAT;
+			case ShaderDataType::Float2:	return GL_FLOAT;
+			case ShaderDataType::Float3:	return GL_FLOAT;
+			case ShaderDataType::Float4:	return GL_FLOAT;
+			case ShaderDataType::Int:		return GL_INT;
+			case ShaderDataType::Int2:		return GL_INT;
+			case ShaderDataType::Int3:		return GL_INT;
+			case ShaderDataType::Int4:		return GL_INT;
+			case ShaderDataType::Mat3:		return GL_FLOAT;
+			case ShaderDataType::Mat4:		return GL_FLOAT;
+			case ShaderDataType::Bool:		return GL_BOOL;
+		}
+
+		GE_CORE_ASSERT(false, "Unknown ShaderDataType!");
+		return GL_NONE;
+	}
+
 	OpenGLShader::OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc)
 	{
 		// code from https://wikis.khronos.org/opengl/Shader_Compilation

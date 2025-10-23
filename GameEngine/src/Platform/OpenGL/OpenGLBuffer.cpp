@@ -1,5 +1,6 @@
 #include "gepch.h"
 #include "OpenGLBuffer.h"
+#include "GameEngine/Log.h"
 
 #include <glad/glad.h>
 

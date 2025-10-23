@@ -2,10 +2,10 @@
 
 #include "gepch.h"
 #include "GameEngine/Renderer/Shader.h"
-
-// TODO: ADD SHADER ABSTRACTION DEPENDING ON THE SELECTED RENDERERAPI
+#include <glad/glad.h>
 
 namespace GameEngine {
+
 	class OpenGLShader : public Shader
 	{
 	public:
@@ -14,6 +14,8 @@ namespace GameEngine {
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
+
+		static GLenum ShaderType2GlType(const ShaderDataType& type);
 	private:
 		uint32_t m_RendererID = 0;
 	};
