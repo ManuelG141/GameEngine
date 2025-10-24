@@ -1,10 +1,11 @@
 #pragma once
 
 #include "gepch.h"
+#include "GameEngine/Core.h"
 
 namespace GameEngine {
 
-	enum class ShaderDataType
+	enum class GE_API ShaderDataType
 	{
 		None = 0,
 		Float, Float2, Float3, Float4,
@@ -13,9 +14,9 @@ namespace GameEngine {
 		Bool,
 	};
 
-	uint32_t CalShaderTypeSize(const ShaderDataType& type);
+	uint32_t GE_API CalShaderTypeSize(const ShaderDataType& type);
 
-	class Shader
+	class GE_API Shader
 	{
 	public:
 		virtual ~Shader() {};

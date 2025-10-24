@@ -7,14 +7,14 @@
 
 namespace GameEngine {
 
-	class GE_API Log
+	class Log
 	{
 	public:
-		static void Init();
+		GE_API static void Init();
 
 		// Search if it's safe to pass shared_ptr as reference instead of use make_shared
 		inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
-		inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
+		GE_API inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
 	private:
 		static std::shared_ptr<spdlog::logger> s_CoreLogger;
 		static std::shared_ptr<spdlog::logger> s_ClientLogger;

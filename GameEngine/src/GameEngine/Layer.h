@@ -6,19 +6,19 @@
 namespace GameEngine 
 {
 
-	class GE_API Layer
+	class Layer
 	{
 	public:
-		Layer(const std::string& name = "Layer");
-		virtual ~Layer();
+		GE_API Layer(const std::string& name = "Layer");
+		GE_API virtual ~Layer();
 
-		virtual void OnAttach() {}
-		virtual void OnDetach() {}
-		virtual void OnUpdate() {}
-		virtual void OnImGuiRender() {}
-		virtual void OnEvent(Event& event) {}
+		GE_API virtual void OnAttach() {}
+		GE_API virtual void OnDetach() {}
+		GE_API virtual void OnUpdate() {}
+		GE_API virtual void OnImGuiRender() {}
+		GE_API virtual void OnEvent(Event& event) {}
 
-		inline const std::string& GetName() const { return m_DebugName; }
+		GE_API inline std::string& GetName() { return m_DebugName; }
 	protected:
 		std::string m_DebugName;
 	};

@@ -13,25 +13,25 @@
 namespace GameEngine {
 
 	// dllexport is required to use this class in sandbox application
-	class GE_API Application
+	class Application
 	{
 	public:
-		Application(const WindowProps& props = WindowProps());
-		virtual ~Application();
+		GE_API Application(const WindowProps& props = WindowProps());
+		GE_API virtual ~Application();
 
-		void Run();
+		GE_API void Run();
 
-		void OnEvent(Event& e);
+		GE_API void OnEvent(Event& e);
 
-		void PushLayer(Layer* layer);
-		void PushOverlay(Layer* overlay);
-		void PopLayer(Layer* layer);
-		void PopOverlay(Layer* overlay);
+		GE_API void PushLayer(Layer* layer);
+		GE_API void PushOverlay(Layer* overlay);
+		GE_API void PopLayer(Layer* layer);
+		GE_API void PopOverlay(Layer* overlay);
 
-		void SetVSync(bool enabled);
+		GE_API void SetVSync(bool enabled);
 
-		inline Window& GetWindowObject() { return *m_Window; }
-		inline static Application& Get() { return *s_Instance; }
+		GE_API inline Window& GetWindowObject() { return *m_Window; }
+		GE_API inline static Application& Get() { return *s_Instance; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);

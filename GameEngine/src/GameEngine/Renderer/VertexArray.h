@@ -1,10 +1,11 @@
 #pragma once
 
+#include "GameEngine/Core.h"
 #include "GameEngine/Renderer/Buffer.h"
 
 namespace GameEngine {
 
-	class VertexArray
+	class GE_API VertexArray
 	{
 	public:
 		virtual ~VertexArray() {}

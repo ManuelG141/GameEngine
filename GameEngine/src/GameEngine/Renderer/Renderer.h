@@ -1,11 +1,12 @@
 #pragma once
 
 #include "gepch.h"
+#include "GameEngine/Core.h"
 #include "RenderCommand.h"
 
 namespace GameEngine {
 
-	class Renderer
+	class GE_API Renderer
 	{
 	public:
 		static void BeginScene();

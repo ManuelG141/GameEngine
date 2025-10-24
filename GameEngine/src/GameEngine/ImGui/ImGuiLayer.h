@@ -11,7 +11,7 @@ struct ImGuiIO;      // Main configuration and I/O between your application and 
 
 namespace GameEngine {
 
-	class GE_API ImGuiLayer : public Layer
+	class ImGuiLayer : public Layer
 	{
 	public:
 		ImGuiLayer(bool showDemo = true);

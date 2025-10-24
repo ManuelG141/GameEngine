@@ -5,7 +5,7 @@
 #ifdef GE_PLATFORM_WINDOWS
 	#ifdef GE_BUILD_DLL // defined in the Engine to export symbols
 		#define GE_API __declspec(dllexport)
-		#define IMGUI_API __declspec(dllexport) //ImGui library should also define as dllexport in order to correctly export the symbols
+		//#define IMGUI_API __declspec(dllexport) //ImGui library should also define as dllexport in order to correctly export the symbols
 	#elif defined GE_IMPORT_DLL // defined in Sandbox to import symbols
 		#define GE_API __declspec(dllimport)
 		#define IMGUI_API __declspec(dllimport)

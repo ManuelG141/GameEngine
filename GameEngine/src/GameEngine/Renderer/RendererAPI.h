@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gepch.h"
+#include "GameEngine/Core.h"
 #include "VertexArray.h"
 #include <glm/glm.hpp>
 

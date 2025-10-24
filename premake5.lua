@@ -149,7 +149,7 @@ project "Sandbox"
 	-- Change configuration type depending on the configuration
 	filter "*DLL"
 		defines "GE_IMPORT_DLL"
-		staticruntime "Off"
+		staticruntime "Off" -- Don't include Static runtime for DLL builds
 	filter "not *DLL"
 		staticruntime "On"
 

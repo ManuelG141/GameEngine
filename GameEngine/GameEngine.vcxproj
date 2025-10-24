@@ -757,9 +757,9 @@ copy /B /Y ..\bin\SharedLib\DistDLL-windows-x86_64\GameEngine\GameEngine.dll ..\
     <ClCompile Include="src\GameEngine\LayerStack.cpp" />
     <ClCompile Include="src\GameEngine\Log.cpp" />
     <ClCompile Include="src\GameEngine\Renderer\Buffer.cpp" />
+    <ClCompile Include="src\GameEngine\Renderer\RenderCommand.cpp" />
     <ClCompile Include="src\GameEngine\Renderer\Renderer.cpp" />
     <ClCompile Include="src\GameEngine\Renderer\RendererAPI.cpp" />
-    <ClCompile Include="src\GameEngine\Renderer\RenderCommand.cpp" />
     <ClCompile Include="src\GameEngine\Renderer\Shader.cpp" />
     <ClCompile Include="src\GameEngine\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />

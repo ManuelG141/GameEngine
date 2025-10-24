@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gepch.h"
+#include "GameEngine/Core.h"
 #include "Shader.h"
 
 namespace GameEngine {
@@ -58,7 +59,7 @@ namespace GameEngine {
 		uint32_t m_Stride = 0;
 	};
 
-	class VertexBuffer
+	class GE_API VertexBuffer
 	{
 	public:
 		virtual ~VertexBuffer() {}
@@ -74,7 +75,7 @@ namespace GameEngine {
 		static VertexBuffer* Create(float* vertices, uint32_t size);
 	};
 
-	class IndexBuffer
+	class GE_API IndexBuffer
 	{
 	public:
 		virtual ~IndexBuffer() {}
