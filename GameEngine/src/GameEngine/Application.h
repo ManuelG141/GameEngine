@@ -41,8 +41,6 @@ namespace GameEngine {
 		bool m_Running;
 		LayerStack m_LayerStack;
 
-		std::unordered_map<std::string, std::shared_ptr<VertexArray>> m_VertexArrays; // To store multiple VertexArrays
-		std::unordered_map<std::string, std::shared_ptr<Shader>> m_Shaders; // To store multiple shaders
 	private:
 		static Application* s_Instance; // To make Application a singleton class
 	};

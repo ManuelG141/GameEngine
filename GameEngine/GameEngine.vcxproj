@@ -291,7 +291,6 @@ copy /B /Y ..\bin\SharedLib\DistDLL-windows-x86_64\GameEngine\GameEngine.dll ..\
   <ItemGroup>
     <ClInclude Include="src\GameEngine.h" />
     <ClInclude Include="src\GameEngine\Application.h" />
-    <ClInclude Include="src\GameEngine\Renderer\Examples\ChessBoard.h" />
     <ClInclude Include="src\GameEngine\Core.h" />
     <ClInclude Include="src\GameEngine\EntryPoint.h" />
     <ClInclude Include="src\GameEngine\Events\ApplicationEvent.h" />
@@ -306,14 +305,16 @@ copy /B /Y ..\bin\SharedLib\DistDLL-windows-x86_64\GameEngine\GameEngine.dll ..\
     <ClInclude Include="src\GameEngine\Log.h" />
     <ClInclude Include="src\GameEngine\MouseButtonCodes.h" />
     <ClInclude Include="src\GameEngine\Renderer\Buffer.h" />
-    <ClInclude Include="src\GameEngine\Renderer\Examples\Triangle.h" />
     <ClInclude Include="src\GameEngine\Renderer\GraphicsContext.h" />
+    <ClInclude Include="src\GameEngine\Renderer\RenderCommand.h" />
     <ClInclude Include="src\GameEngine\Renderer\Renderer.h" />
+    <ClInclude Include="src\GameEngine\Renderer\RendererAPI.h" />
     <ClInclude Include="src\GameEngine\Renderer\Shader.h" />
     <ClInclude Include="src\GameEngine\Renderer\VertexArray.h" />
     <ClInclude Include="src\GameEngine\Window.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
     <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
@@ -757,10 +758,13 @@ copy /B /Y ..\bin\SharedLib\DistDLL-windows-x86_64\GameEngine\GameEngine.dll ..\
     <ClCompile Include="src\GameEngine\Log.cpp" />
     <ClCompile Include="src\GameEngine\Renderer\Buffer.cpp" />
     <ClCompile Include="src\GameEngine\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\GameEngine\Renderer\RendererAPI.cpp" />
+    <ClCompile Include="src\GameEngine\Renderer\RenderCommand.cpp" />
     <ClCompile Include="src\GameEngine\Renderer\Shader.cpp" />
     <ClCompile Include="src\GameEngine\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />

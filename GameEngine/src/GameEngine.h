@@ -15,6 +15,10 @@
 #include "GameEngine/Events/MouseEvent.h"
 #include "GameEngine/Events/Event.h"
 
+#include "GameEngine/Renderer/Renderer.h"
+#include "GameEngine/Renderer/Buffer.h"
+#include "GameEngine/Renderer/Shader.h"
+
 #include "GameEngine/Log.h"
 
 #include "GameEngine/ImGui/ImGuiLayer.h"
