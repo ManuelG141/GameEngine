@@ -19,6 +19,8 @@
 #include "GameEngine/Renderer/Buffer.h"
 #include "GameEngine/Renderer/Shader.h"
 
+#include "GameEngine/Renderer/Camera.h"
+
 #include "GameEngine/Log.h"
 
 #include "GameEngine/ImGui/ImGuiLayer.h"

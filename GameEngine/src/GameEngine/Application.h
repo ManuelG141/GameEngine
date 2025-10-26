@@ -9,11 +9,12 @@
 #include "GameEngine/Renderer/Shader.h"
 #include "GameEngine/Renderer/Buffer.h"
 #include "GameEngine/Renderer/VertexArray.h"
+#include "GameEngine/Renderer/Camera.h"
 
 namespace GameEngine {
 
 	// dllexport is required to use this class in sandbox application
-	class Application
+	class GE_API Application
 	{
 	public:
 		GE_API Application(const WindowProps& props = WindowProps());
@@ -29,7 +30,7 @@ namespace GameEngine {
 		GE_API void PopOverlay(Layer* overlay);
 
 		GE_API void SetVSync(bool enabled);
-
+		GE_API inline OrthographicCamera& GetOrthographicCamera() { return m_Camera; }
 		GE_API inline Window& GetWindowObject() { return *m_Window; }
 		GE_API inline static Application& Get() { return *s_Instance; }
 	private:
@@ -41,6 +42,7 @@ namespace GameEngine {
 		bool m_Running;
 		LayerStack m_LayerStack;
 
+		OrthographicCamera m_Camera;
 	private:
 		static Application* s_Instance; // To make Application a singleton class
 	};

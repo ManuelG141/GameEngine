@@ -3,6 +3,8 @@
 #include "OpenGLShader.h"
 #include "GameEngine/Log.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 namespace GameEngine {
 
 	GLenum OpenGLShader::ShaderType2GlType(const ShaderDataType& type)
@@ -175,5 +177,14 @@ namespace GameEngine {
 	void OpenGLShader::Unbind() const
 	{
 		glUseProgram(0);
+	}
+
+	void OpenGLShader::UploadUniformMat4(const std::string& name, const glm::mat4& matrix) const
+	{
+		// Get Location from shader uniform on OpenGL state machine
+		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+
+		// Send uniform data to OpenGL side
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
 }

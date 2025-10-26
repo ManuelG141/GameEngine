@@ -7,6 +7,8 @@
 #include <GLFW/glfw3.h>
 
 #include "Input.h"
+#include "KeyCodes.h"
+#include "MouseButtonCodes.h"
 #include "GameEngine/Renderer/Renderer.h"
 
 namespace GameEngine {
@@ -14,6 +16,7 @@ namespace GameEngine {
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application(const WindowProps& props)
+		: m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
 	{
 		GE_CORE_ASSERT(!s_Instance, "Application already exits!");
 		s_Instance = this;
@@ -79,7 +82,7 @@ namespace GameEngine {
 			});
 			RenderCommand::Clear();
 
-			Renderer::BeginScene();
+			Renderer::BeginScene(m_Camera);
 
 			// Update every layer before updating the window
 			for (Layer* layer : m_LayerStack)
