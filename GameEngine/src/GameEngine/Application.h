@@ -14,7 +14,7 @@
 namespace GameEngine {
 
 	// dllexport is required to use this class in sandbox application
-	class GE_API Application
+	class Application
 	{
 	public:
 		GE_API Application(const WindowProps& props = WindowProps());

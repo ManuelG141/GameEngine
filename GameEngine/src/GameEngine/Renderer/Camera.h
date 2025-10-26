@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GameEngine/Core.h"
 #include <glm/glm.hpp>
 
 namespace GameEngine {
@@ -7,17 +8,17 @@ namespace GameEngine {
 	class OrthographicCamera // For 2D rendering at the moment
 	{
 	public:
-		OrthographicCamera(float left, float right, float bottom, float top);
+		GE_API OrthographicCamera(float left, float right, float bottom, float top);
 
-		void SetPosition(const glm::vec3& position) { m_Position = position; RecalculateViewMatrix(); }
-		inline const glm::vec3& GetPosition() const { return m_Position; }
+		GE_API void SetPosition(const glm::vec3& position) { m_Position = position; RecalculateViewMatrix(); }
+		GE_API inline const glm::vec3& GetPosition() const { return m_Position; }
 
-		void SetRotation(float rotation) { m_Rotation = rotation; RecalculateViewMatrix(); }
-		inline const float& GetRotation() const { return m_Rotation; }
+		GE_API void SetRotation(float rotation) { m_Rotation = rotation; RecalculateViewMatrix(); }
+		GE_API inline const float& GetRotation() const { return m_Rotation; }
 
-		inline const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
-		inline const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
-		inline const glm::mat4& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
+		GE_API inline const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
+		GE_API inline const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
+		GE_API inline const glm::mat4& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
 	private:
 		void RecalculateViewMatrix();
 	private:
