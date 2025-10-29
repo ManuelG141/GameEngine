@@ -10,79 +10,118 @@ class ExampleLayer : public GameEngine::Layer
 {
 public:
 	ExampleLayer(const char* name = "Example")
-		: Layer(name)
+		: Layer(name), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
 	{
-		using namespace GameEngine; // Just on this scope
 		// Draw a ChessBoard & Triangle for testing
 		// 1. Chess Board 
 		// Vertex Array
-		m_VertexArrays["chess"].reset(VertexArray::Create());
+		m_VertexArrays["chess"].reset(GameEngine::VertexArray::Create());
 
 		// Create Vertex Buffer and bind it
-		std::shared_ptr<VertexBuffer> ChessBoardVB(VertexBuffer::Create(ChessBoard::vertices, sizeof(ChessBoard::vertices)));
+		std::shared_ptr<GameEngine::VertexBuffer> ChessBoardVB(GameEngine::VertexBuffer::Create(ChessBoard::vertices, sizeof(ChessBoard::vertices)));
 		ChessBoardVB->Bind();
 
 		// Set layout for VertexBuffer
 		ChessBoardVB->SetLayout({
-			{ShaderDataType::Float3, "a_Position"}
+			{GameEngine::ShaderDataType::Float3, "a_Position"}
 		});
 		// Add VertexBuffer to the VertexArray
 		m_VertexArrays["chess"]->AddVertexBuffer("board", ChessBoardVB);
 
 		// Create Index buffer
-		std::shared_ptr<IndexBuffer> ChessBoardWhiteIndicesIB(IndexBuffer::Create(ChessBoard::whiteIndices, ChessBoard::totalIndices));
-		std::shared_ptr<IndexBuffer> ChessBoardBlackIndicesIB(IndexBuffer::Create(ChessBoard::blackIndices, ChessBoard::totalIndices));
-		m_VertexArrays["chess"]->AddIndexBuffer("white", ChessBoardWhiteIndicesIB);
-		m_VertexArrays["chess"]->AddIndexBuffer("black", ChessBoardBlackIndicesIB);
+		std::shared_ptr<GameEngine::IndexBuffer> ChessBoardWhiteIB(GameEngine::IndexBuffer::Create(ChessBoard::whiteIndices, ChessBoard::totalIndices));
+		std::shared_ptr<GameEngine::IndexBuffer> ChessBoardBlackIB(GameEngine::IndexBuffer::Create(ChessBoard::blackIndices, ChessBoard::totalIndices));
+		m_VertexArrays["chess"]->AddIndexBuffer("white", ChessBoardWhiteIB);
+		m_VertexArrays["chess"]->AddIndexBuffer("black", ChessBoardBlackIB);
 
 		// Create Shader class to use it later
-		m_Shaders["white"].reset(Shader::Create(ChessBoard::vertexSrc, ChessBoard::whiteFragmentSrc));
-		m_Shaders["black"].reset(Shader::Create(ChessBoard::vertexSrc, ChessBoard::blackFragmentSrc));
+		m_Shaders["white"].reset(GameEngine::Shader::Create(ChessBoard::vertexSrc, ChessBoard::whiteFragmentSrc));
+		m_Shaders["black"].reset(GameEngine::Shader::Create(ChessBoard::vertexSrc, ChessBoard::blackFragmentSrc));
 
 		m_VertexArrays["chess"]->UnBind();
 
 		// 2. Triangle
-		m_VertexArrays["triangle"].reset(VertexArray::Create());
+		m_VertexArrays["triangle"].reset(GameEngine::VertexArray::Create());
 
-		std::shared_ptr<VertexBuffer> TriangleVB(VertexBuffer::Create(Triangle::vertices, sizeof(Triangle::vertices)));
+		std::shared_ptr<GameEngine::VertexBuffer> TriangleVB(GameEngine::VertexBuffer::Create(Triangle::vertices, sizeof(Triangle::vertices)));
 		TriangleVB->Bind();
 
 		TriangleVB->SetLayout({
-			{ShaderDataType::Float3, "a_Position"},
-			{ShaderDataType::Float4, "a_Color"}
+			{GameEngine::ShaderDataType::Float3, "a_Position"},
+			{GameEngine::ShaderDataType::Float4, "a_Color"}
 			});
 		m_VertexArrays["triangle"]->AddVertexBuffer("vertices+color", TriangleVB);
 
-		std::shared_ptr<IndexBuffer> TriangleIB(IndexBuffer::Create(Triangle::indices, Triangle::totalIndices));
+		std::shared_ptr<GameEngine::IndexBuffer> TriangleIB(GameEngine::IndexBuffer::Create(Triangle::indices, Triangle::totalIndices));
 		m_VertexArrays["triangle"]->AddIndexBuffer("indices", TriangleIB);
 
-		m_Shaders["triangle"].reset(Shader::Create(Triangle::vertexSrc, Triangle::fragmentSrc));
+		m_Shaders["triangle"].reset(GameEngine::Shader::Create(Triangle::vertexSrc, Triangle::fragmentSrc));
 	}
 
-	virtual void OnUpdate() override
+	virtual void OnUpdate(const GameEngine::Timestep& ts) override
 	{
+		GE_TRACE("Delta time ({0}ms)", ts.GetMilliSeconds());
+
+		// More smooth with polling than with key events
+		if (GameEngine::Input::IsKeyPressed(GE_KEY_R))
+		{
+			if (GameEngine::Input::IsKeyPressed(GE_KEY_W))
+				// Speed = units/frame, ts = frame/seconds, Speed * ts = units/seconds (Frame agnostic)
+				m_CameraRotation += m_CameraRotationSpeed * ts;
+			if (GameEngine::Input::IsKeyPressed(GE_KEY_S))
+				m_CameraRotation -= m_CameraRotationSpeed * ts;
+		}
+		else
+		{
+			if (GameEngine::Input::IsKeyPressed(GE_KEY_W))
+				m_CameraPosition.y += m_CameraMoveSpeed * ts;
+			if (GameEngine::Input::IsKeyPressed(GE_KEY_S))
+				m_CameraPosition.y -= m_CameraMoveSpeed * ts;
+		}
+
+		if (GameEngine::Input::IsKeyPressed(GE_KEY_A))
+			m_CameraPosition.x -= m_CameraMoveSpeed * ts;
+		if (GameEngine::Input::IsKeyPressed(GE_KEY_D))
+			m_CameraPosition.x += m_CameraMoveSpeed * ts;
+
+		GameEngine::RenderCommand::SetClearColor({
+			235.f / 255.f,
+			24.f / 255.f,
+			106.f / 255.f,
+			1.0f
+		});
+		GameEngine::RenderCommand::Clear();
+
+		m_Camera.SetPosition(m_CameraPosition);
+		m_Camera.SetRotation(m_CameraRotation);
+
+		GameEngine::Renderer::BeginScene(m_Camera);
+
 		GameEngine::Renderer::Submit(m_Shaders["white"], "white", m_VertexArrays["chess"]);
 		GameEngine::Renderer::Submit(m_Shaders["black"], "black", m_VertexArrays["chess"]);
 		GameEngine::Renderer::Submit(m_Shaders["triangle"], "indices", m_VertexArrays["triangle"]);
 
-		//GE_INFO("[{0}] Layer::Update", m_DebugName);
-		if (GameEngine::Input::IsKeyPressed(GE_KEY_TAB))
-			GE_TRACE("TAB is pressed!");
+		GameEngine::Renderer::EndScene();
 	}
 
 	virtual void OnImGuiRender() override
 	{
-		ImGui::Begin("Test");
-		ImGui::Text("Hello world");
+		ImGui::Begin("Camera");
+		ImGui::Text("Use \"W A S D\" to move the camera around the scene, use \"W S\" with \"R\" pressed to rotate the camera");
 
-		ImGui::SliderFloat("linear speed (px/frame)", &m_DeltaPos, 0.f, 0.5f);
-		ImGui::SliderFloat("angular speed (degrees/frame)", &m_DeltaRot, 0.f, 10.f);
+		ImGui::SliderFloat("linear speed (units/s)", &m_CameraMoveSpeed, 0.f, 10.0f);
+		ImGui::SliderFloat("angular speed (degrees/s)", &m_CameraRotationSpeed, 0.f, 90.0f);
+
+		if (ImGui::Button(m_Vsync ? "Vsync (On)" : "Vsync (Off)"))
+		{
+			m_Vsync = !m_Vsync;
+			GameEngine::Application::Get().SetVSync(m_Vsync);
+		}
 
 		if (ImGui::Button("Reset camera"))
 		{
-			GameEngine::OrthographicCamera* orthoCamera = &GameEngine::Application::Get().GetOrthographicCamera();
-			orthoCamera->SetPosition({ 0.f, 0.f, 0.f });
-			orthoCamera->SetRotation(0.f);
+			m_CameraPosition = {0.f, 0.f, 0.f};
+			m_CameraRotation = 0.f;
 		}
 
 		ImGui::End();
@@ -92,68 +131,19 @@ public:
 	{
 		//GE_TRACE("[{0}]: {1}", m_DebugName, event.ToString());
 		GameEngine::EventDispatcher dispatcher(event);
-		dispatcher.Dispatch<GameEngine::KeyPressedEvent>(GE_BIND_EVENT_FN(ExampleLayer::MoveCamera));
-		dispatcher.Dispatch<GameEngine::MouseScrolledEvent>(GE_BIND_EVENT_FN(ExampleLayer::RotateCamera));
-	}
-
-	bool RotateCamera(const GameEngine::MouseScrolledEvent& event)
-	{
-		if (!GameEngine::Input::IsMouseButtonPressed(GE_MOUSE_BUTTON_RIGHT))
-			return false;
-
-		float rotation = 0;
-
-		if (event.GetYOffset() == -1)
-			rotation = -m_DeltaRot;
-		else
-			rotation = m_DeltaRot;
-
-		GameEngine::OrthographicCamera* orthoCamera = &GameEngine::Application::Get().GetOrthographicCamera();
-		const float camRotation = orthoCamera->GetRotation();
-		orthoCamera->SetRotation(camRotation + rotation);
-		return true;
-	}
-
-	bool MoveCamera(const GameEngine::KeyPressedEvent& event)
-	{
-		float xOffset = 0, yOffset = 0;
-
-		{
-			using namespace GameEngine;
-			if (!(
-				Input::IsKeyPressed(GE_KEY_W) ||
-				Input::IsKeyPressed(GE_KEY_A) ||
-				Input::IsKeyPressed(GE_KEY_S) ||
-				Input::IsKeyPressed(GE_KEY_D)
-			))
-				return false;
-
-			if (!Input::IsKeyPressed(GE_KEY_W) != !Input::IsKeyPressed(GE_KEY_S)) // XOR
-			{
-				if (Input::IsKeyPressed(GE_KEY_W))
-					yOffset = m_DeltaPos;
-				if (Input::IsKeyPressed(GE_KEY_S))
-					yOffset = -m_DeltaPos;
-			}
-			if (!Input::IsKeyPressed(GE_KEY_A) != !Input::IsKeyPressed(GE_KEY_D)) // XOR
-			{
-				if (Input::IsKeyPressed(GE_KEY_A))
-					xOffset = -m_DeltaPos;
-				if (Input::IsKeyPressed(GE_KEY_D))
-					xOffset = m_DeltaPos;
-			}
-		}
-
-		GameEngine::OrthographicCamera* orthoCamera = &GameEngine::Application::Get().GetOrthographicCamera();
-		const glm::vec3 camPosition = orthoCamera->GetPosition();
-		orthoCamera->SetPosition({ camPosition.x + xOffset, camPosition.y + yOffset, camPosition.z});
-		return true;
 	}
 private:
 	std::unordered_map<std::string, std::shared_ptr<GameEngine::VertexArray>> m_VertexArrays; // To store multiple VertexArrays
 	std::unordered_map<std::string, std::shared_ptr<GameEngine::Shader>> m_Shaders; // To store multiple shaders
 
-	float m_DeltaPos = 0.05f, m_DeltaRot = 2;
+	float m_CameraMoveSpeed = 1.5f; // Units/seconds (Thanks to timestep implementation)
+	float m_CameraRotationSpeed = 45.0f; // Degrees/seconds
+
+	float m_CameraRotation = 0;
+	glm::vec3 m_CameraPosition = { 0.0f, 0.0f, 0.0f };
+	GameEngine::OrthographicCamera m_Camera;
+
+	bool m_Vsync;
 };
 
 class Sandbox : public GameEngine::Application

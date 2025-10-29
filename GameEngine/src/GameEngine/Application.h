@@ -2,14 +2,14 @@
 
 #include "Core.h"
 #include "Window.h"
+
 #include "GameEngine/LayerStack.h"
+#include "GameEngine/ImGui/ImGuiLayer.h"
+
 #include "GameEngine/Events/Event.h"
 #include "GameEngine/Events/ApplicationEvent.h"
-#include "GameEngine/ImGui/ImGuiLayer.h"
-#include "GameEngine/Renderer/Shader.h"
-#include "GameEngine/Renderer/Buffer.h"
-#include "GameEngine/Renderer/VertexArray.h"
-#include "GameEngine/Renderer/Camera.h"
+
+#include "GameEngine/Core/Timestep.h"
 
 namespace GameEngine {
 
@@ -30,19 +30,19 @@ namespace GameEngine {
 		GE_API void PopOverlay(Layer* overlay);
 
 		GE_API void SetVSync(bool enabled);
-		GE_API inline OrthographicCamera& GetOrthographicCamera() { return m_Camera; }
 		GE_API inline Window& GetWindowObject() { return *m_Window; }
 		GE_API inline static Application& Get() { return *s_Instance; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
-
+	private:
 		std::unique_ptr<Window> m_Window;
-		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running;
+
+		ImGuiLayer* m_ImGuiLayer;
 		LayerStack m_LayerStack;
 
-		OrthographicCamera m_Camera;
+		float m_LastFrameTime = 0.0f;
 	private:
 		static Application* s_Instance; // To make Application a singleton class
 	};

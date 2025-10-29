@@ -1,22 +1,17 @@
 #include "gepch.h"
+
 #include "Core.h"
 #include "Application.h"
-
-#include "GameEngine/Log.h"
+#include "Log.h"
+#include "GameEngine/Renderer/Renderer.h"
 
 #include <GLFW/glfw3.h>
-
-#include "Input.h"
-#include "KeyCodes.h"
-#include "MouseButtonCodes.h"
-#include "GameEngine/Renderer/Renderer.h"
 
 namespace GameEngine {
 
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application(const WindowProps& props)
-		: m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
 	{
 		GE_CORE_ASSERT(!s_Instance, "Application already exits!");
 		s_Instance = this;
@@ -74,21 +69,14 @@ namespace GameEngine {
 	{
 		while (m_Running)
 		{
-			RenderCommand::SetClearColor({
-				235.f / 255.f,
-				24.f  / 255.f,
-				106.f / 255.f,
-				1.0f
-			});
-			RenderCommand::Clear();
-
-			Renderer::BeginScene(m_Camera);
+			// Temporary
+			float currentTime = (float)glfwGetTime();
+			Timestep ts = currentTime - m_LastFrameTime;
+			m_LastFrameTime = currentTime;
 
 			// Update every layer before updating the window
 			for (Layer* layer : m_LayerStack)
-				layer->OnUpdate();
-
-			Renderer::EndScene();
+				layer->OnUpdate(ts);
 
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerStack)

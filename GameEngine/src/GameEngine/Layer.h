@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameEngine/Core.h"
+#include "GameEngine/Core/Timestep.h"
 #include "GameEngine/Events/Event.h"
 
 namespace GameEngine 
@@ -14,7 +15,7 @@ namespace GameEngine
 
 		GE_API virtual void OnAttach() {}
 		GE_API virtual void OnDetach() {}
-		GE_API virtual void OnUpdate() {}
+		GE_API virtual void OnUpdate(const Timestep& ts) {}
 		GE_API virtual void OnImGuiRender() {}
 		GE_API virtual void OnEvent(Event& event) {}
 
