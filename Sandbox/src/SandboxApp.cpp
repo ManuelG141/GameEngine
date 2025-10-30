@@ -64,21 +64,16 @@ public:
 		GE_TRACE("Delta time ({0}ms)", ts.GetMilliSeconds());
 
 		// More smooth with polling than with key events
-		if (GameEngine::Input::IsKeyPressed(GE_KEY_R))
-		{
-			if (GameEngine::Input::IsKeyPressed(GE_KEY_W))
-				// Speed = units/frame, ts = frame/seconds, Speed * ts = units/seconds (Frame agnostic)
-				m_CameraRotation += m_CameraRotationSpeed * ts;
-			if (GameEngine::Input::IsKeyPressed(GE_KEY_S))
-				m_CameraRotation -= m_CameraRotationSpeed * ts;
-		}
-		else
-		{
-			if (GameEngine::Input::IsKeyPressed(GE_KEY_W))
-				m_CameraPosition.y += m_CameraMoveSpeed * ts;
-			if (GameEngine::Input::IsKeyPressed(GE_KEY_S))
-				m_CameraPosition.y -= m_CameraMoveSpeed * ts;
-		}
+		if (GameEngine::Input::IsKeyPressed(GE_KEY_Q))
+			// Speed = units/frame, ts = frame/seconds, Speed * ts = units/seconds (Frame agnostic)
+			m_CameraRotation -= m_CameraRotationSpeed * ts;
+		if (GameEngine::Input::IsKeyPressed(GE_KEY_E))
+			m_CameraRotation += m_CameraRotationSpeed * ts;
+
+		if (GameEngine::Input::IsKeyPressed(GE_KEY_W))
+			m_CameraPosition.y += m_CameraMoveSpeed * ts;
+		if (GameEngine::Input::IsKeyPressed(GE_KEY_S))
+			m_CameraPosition.y -= m_CameraMoveSpeed * ts;
 
 		if (GameEngine::Input::IsKeyPressed(GE_KEY_A))
 			m_CameraPosition.x -= m_CameraMoveSpeed * ts;
@@ -123,7 +118,7 @@ public:
 	virtual void OnImGuiRender() override
 	{
 		ImGui::Begin("Camera");
-		ImGui::Text("Use \"W A S D\" to move the camera around the scene, use \"W S\" with \"R\" pressed to rotate the camera");
+		ImGui::Text("Use \"W A S D\" to move the camera around the scene, use \"Q R\" to rotate the camera");
 
 		ImGui::SliderFloat("linear speed (units/s)", &m_CameraMoveSpeed, 0.f, 10.0f);
 		ImGui::SliderFloat("angular speed (degrees/s)", &m_CameraRotationSpeed, 0.f, 90.0f);
