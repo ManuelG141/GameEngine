@@ -1,9 +1,9 @@
 #pragma once
 
 namespace ChessBoard {
-	constexpr float xOffset = -0.75f;
-	constexpr float yOffset = 0.75f;
-	constexpr float boardWidth = 1.5f;
+	constexpr float xOffset = -0.5f;
+	constexpr float yOffset = 0.5f;
+	constexpr float boardWidth = 1.0f;
 	constexpr float sqSze = boardWidth/8;
 	
 	float vertices[3 * 81] = {
@@ -255,13 +255,14 @@ namespace ChessBoard {
 			layout(location = 0) in vec3 a_Position;
 
 			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
 
 			out vec3 v_Position;
 
 			void main()
 			{
 				v_Position = a_Position;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
 			}
 
 		)";

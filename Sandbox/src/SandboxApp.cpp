@@ -5,12 +5,13 @@
 
 #include <imgui/imgui.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 class ExampleLayer : public GameEngine::Layer
 {
 public:
-	ExampleLayer(const char* name = "Example")
-		: Layer(name), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
+	ExampleLayer(const char* name = "Example", const bool vsync = true)
+		: Layer(name), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f), m_BoardPosition(0.0f), m_Vsync(vsync)
 	{
 		// Draw a ChessBoard & Triangle for testing
 		// 1. Chess Board 
@@ -97,8 +98,23 @@ public:
 
 		GameEngine::Renderer::BeginScene(m_Camera);
 
-		GameEngine::Renderer::Submit(m_Shaders["white"], "white", m_VertexArrays["chess"]);
-		GameEngine::Renderer::Submit(m_Shaders["black"], "black", m_VertexArrays["chess"]);
+		// Just a brief demonstration (not optimal)
+		static glm::mat4 scaleMatrix = glm::mat4(1.0f);
+		scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(m_BoardScale));
+
+		for (int i = 0; i < m_BoardWidth * m_BoardWidth; i++) // Single loop that behaves like a nested loop
+		{
+			const int x = i / m_BoardWidth;
+			const int y = i % m_BoardWidth;
+			glm::vec3 pos(
+				m_BoardPosition.x + x * (m_BoardScale * 1.1f),
+				m_BoardPosition.y + y * (m_BoardScale * 1.1f),
+				m_BoardPosition.z + 0.0f);
+			glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scaleMatrix;
+			GameEngine::Renderer::Submit(m_Shaders["white"], "white", m_VertexArrays["chess"], transform);
+			GameEngine::Renderer::Submit(m_Shaders["black"], "black", m_VertexArrays["chess"], transform);
+		}
+
 		GameEngine::Renderer::Submit(m_Shaders["triangle"], "indices", m_VertexArrays["triangle"]);
 
 		GameEngine::Renderer::EndScene();
@@ -112,15 +128,22 @@ public:
 		ImGui::SliderFloat("linear speed (units/s)", &m_CameraMoveSpeed, 0.f, 10.0f);
 		ImGui::SliderFloat("angular speed (degrees/s)", &m_CameraRotationSpeed, 0.f, 90.0f);
 
+		ImGui::SliderFloat3("Board position", &m_BoardPosition.x, -2.0f, 2.0f);
+		ImGui::SliderFloat("Board scale", &m_BoardScale, 0.01f, 1.0f);
+		ImGui::SliderInt("Board grid width", &m_BoardWidth, 1, 50);
+
 		if (ImGui::Button(m_Vsync ? "Vsync (On)" : "Vsync (Off)"))
 		{
 			m_Vsync = !m_Vsync;
 			GameEngine::Application::Get().SetVSync(m_Vsync);
 		}
 
+		if (ImGui::Button("Reset board"))
+			m_BoardPosition = { 0.0f, 0.0f, 0.0f };
+
 		if (ImGui::Button("Reset camera"))
 		{
-			m_CameraPosition = {0.f, 0.f, 0.f};
+			m_CameraPosition = {0.0f, 0.0f, 0.0f};
 			m_CameraRotation = 0.f;
 		}
 
@@ -139,9 +162,14 @@ private:
 	float m_CameraMoveSpeed = 1.5f; // Units/seconds (Thanks to timestep implementation)
 	float m_CameraRotationSpeed = 45.0f; // Degrees/seconds
 
-	float m_CameraRotation = 0;
-	glm::vec3 m_CameraPosition = { 0.0f, 0.0f, 0.0f };
+	float m_CameraRotation = 0.0f;
+	glm::vec3 m_CameraPosition;
 	GameEngine::OrthographicCamera m_Camera;
+
+	glm::vec2 m_BoardMoveSpeed = { 1.0f, 1.0f };
+	glm::vec3 m_BoardPosition;
+	int m_BoardWidth = 5;
+	float m_BoardScale = 0.1f;
 
 	bool m_Vsync;
 };
@@ -154,11 +182,13 @@ public:
 		// If you want to use the default options ("Game Engine", 1280U, 720U) just don't call the constructor of Application
 		: Application(GameEngine::WindowProps("Sandbox", 1280U, 720U))
 	{
+		const bool EnableVsync = true;
+
 		// Disable/Enable VSync
-		this->SetVSync(true);
+		this->SetVSync(EnableVsync);
 
 		// Example of Layer Implementation
-		PushLayer(new ExampleLayer());
+		PushLayer(new ExampleLayer("Example", EnableVsync));
 	}
 
 	~Sandbox() = default;
